@@ -10,10 +10,12 @@
 #include "os.h"
 #include "prime/CGameState.hpp"
 #include "prime/CMain.hpp"
+#include "prime/CWorld.hpp"
+#include "prime/CWorldState.hpp"
 #include "settings.hpp"
+#include "stb_sprintf.h"
 #include "system/ImGuiEngine.hpp"
 #include "version.h"
-#include "stb_sprintf.h"
 
 #define PAD_MAX_CONTROLLERS 4
 
@@ -167,40 +169,24 @@ void PracticeMod::renderMenu() {
 
 float bombTime = 0;
 
-void PracticeMod::update(float dt) const {
-  // Lagger (loops)
-  if (!this->pauseScreenActive) {
-    if (SETTINGS.LAG_loop_iterations > 0) {
-      int c = 1;
-      for (int i = 1; i < SETTINGS.LAG_loop_iterations; i++) {
-        for (int j = 1; j < 100; j++) {
-          c = (c + 1 + i + j) * c - j;
-        }
-      }
-    }
-  }
-}
-
 void warp(uint32_t world, uint32_t area) {
-  // TODO
-  // OSReport("Warping to %x, %x\n", world, area);
-  // CAssetId worldID = (CAssetId) (world);
-  // CAssetId areaID = (CAssetId) (area);
-  //
-  // CStateManager *mgr = CStateManager::instance();
-  // mgr->GetWorld()->SetPauseState(true);
-  //
-  // CGameState *gameState = *((CGameState **) (0x80457798 + 0x134));
+  OSReport("Warping to %x, %x\n", world, area);
+  CAssetId worldID = world;
+  CAssetId areaID = area;
+
+  CStateManager *mgr = &g_CStateManager;
+  mgr->GetWorld()->SetLoadPauseState(true);
+
+  CGameState *gameState = gpGameState;
   // CSfxManager::SfxStart(0x59A, 0x7F, 0x40, false, 0x7F, false, kInvalidAreaId.id);
-  // gameState->SetCurrentWorldId(worldID);
-  // gameState->CurrentWorldState().SetDesiredAreaAssetId(areaID);
-  //
-  // CMain *cmain = *((CMain **) 0x805A8C38);
-  // cmain->SetFlowState(EFlowState_None);
-  //
-  // mgr->SetShouldQuitGame(true);
-  //
-  // PracticeMod::GetInstance()->pauseScreenClosed();
+  gameState->SetCurrentWorldId(worldID);
+  gameState->CurrentWorldState().SetDesiredAreaAssetId(areaID);
+
+  gpMain->SetFlowState(EFlowState_None);
+
+  mgr->SetShouldQuitGame(true);
+
+  PracticeMod::GetInstance()->pauseScreenClosed();
 }
 
 PracticeMod *pracModInstance = nullptr;

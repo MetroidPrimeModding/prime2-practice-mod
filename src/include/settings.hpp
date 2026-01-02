@@ -24,7 +24,6 @@ struct Settings {
   bool OSD_showLoads : 1 {DEBUG_TRUE};
   bool OSD_showRng : 1 {false};
 
-  s32 LAG_loop_iterations{0};
   bool RNG_lockSeed{false};
 };
 

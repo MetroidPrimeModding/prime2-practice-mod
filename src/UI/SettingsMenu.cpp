@@ -50,17 +50,6 @@ namespace GUI {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNode("Misc")) {
-        // Turns out this isn't actually useful for speedrunners. But I'll leave it for posterity.
-
-
-        ImGui::Text("Lag:");
-        ImGui::SliderInt("Loops", &SETTINGS.LAG_loop_iterations, 0, 30000, "%d",
-                         ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_AlwaysClamp);
-
-        ImGui::TreePop();
-      }
-
       if (ImGui::TreeNode("Dump Ram")) {
         ImGui::TextColored(ImVec4(0.9, 0.1, 0.1, 1.0), "Warning! Full screen flashing lights!");
         ImGui::Text("This dumps the entirety of RAM to the\nscreen for decoding from a video recording.\nThis will take several minutes.");

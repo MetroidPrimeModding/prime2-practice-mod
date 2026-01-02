@@ -1,29 +1,16 @@
 #include "PracticeMod.hpp"
 #include "prime/CFinalInput.hpp"
-#include "prime/CGameState.hpp"
-#include "prime/CGraphics.hpp"
 #include "prime/CMain.hpp"
 #include "prime/CMainFlow.hpp"
 #include "prime/CPauseScreen.hpp"
 #include "prime/CPlayer.hpp"
 #include "prime/CStateManager.hpp"
 #include "utils/ReplaceFunction.hpp"
-#include <os.h>
 #include <prime/CRandom16.hpp>
 #include <settings.hpp>
 
 // clang format loves to just stomp everything here in the least useful possible way
 // clang-format off
-
-
-// CGraphics::EndScene
-DECLARE_FUNCTION_REPLACEMENT(CGraphics_EndScene) {
-  static void Callback() {
-    // PracticeMod::GetInstance()->render();
-    Orig();
-  }
-};
-
 DECLARE_FUNCTION_REPLACEMENT(CMain_DrawDebugMetrics) {
   static void Callback() {
     PracticeMod::GetInstance()->render();
@@ -44,8 +31,6 @@ DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
              sizeof(CFinalInput));
       if (input->ControllerIdx() == 0) {
         PracticeMod::GetInstance()->HandleInputs();
-        // TODO: move this to hook in Game::Update or something
-        PracticeMod::GetInstance()->update(0);
       }
     }
     return res;
@@ -61,14 +46,11 @@ DECLARE_FUNCTION_REPLACEMENT(CPlayer_ProcessInput) {
 
 DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessInput) {
   static void Callback(CPauseScreen *self, CFinalInput &input) {
-    // TODO: find similar checks for convenience to the user
     if (self->GetState() != CPauseScreen::EPauseScreenState::EState_Active) {
       Orig(self, input);
       return;
     }
 
-    // if (self->InputEnabled()) {
-    // TODO: only do this if not closing
     PracticeMod::GetInstance()->pauseScreenOpened();
     if (input.PStart()) {
       PracticeMod::GetInstance()->pauseScreenClosed();
@@ -80,21 +62,11 @@ DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessInput) {
     } else if (input.PZ()) {
       PracticeMod::GetInstance()->menuActive = !PracticeMod::GetInstance()->menuActive;
     }
-
-    // }
     if (!PracticeMod::GetInstance()->menuActive) {
       Orig(self, input);
     }
   }
 };
-
-// CStateManager::Update
-// TODO
-// DECLARE_FUNCTION_REPLACEMENT(CStateManager_Update) {
-//   static void Callback(CStateManager *self, float dt) {
-//     Orig(self, dt);
-//     PracticeMod::GetInstance()->update(dt);
-//   }
 // };
 
 DECLARE_FUNCTION_REPLACEMENT(CRandom16_Next) {
@@ -109,12 +81,9 @@ DECLARE_FUNCTION_REPLACEMENT(CRandom16_Next) {
 // clang-format on
 
 void InstallHooks() {
-  CGraphics_EndScene::InstallAtFuncPtr(&CGraphics::EndScene);
   CMain_DrawDebugMetrics::InstallAtFuncPtr(&CMain::DrawDebugMetrics);
   CMainFlow_OnMessage::InstallAtFuncPtr(&CMainFlow::OnMessage);
   CPlayer_ProcessInput::InstallAtFuncPtr(&CPlayer::ProcessInput);
   CPauseScreen_ProcessInput::InstallAtFuncPtr(&CPauseScreen::ProcessInput);
-  // TODO
-  //CStateManager_Update::InstallAtFuncPtr(&CStateManager::Update);
   CRandom16_Next::InstallAtFuncPtr(&CRandom16::Next);
 }

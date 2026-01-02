@@ -15,7 +15,7 @@ typedef enum EFlowState {
 
 class CMain {
 public:
-  void SetFlowState(EFlowState s) { *(GetField<EFlowState>(this, 0x12c)) = s; };
+  void SetFlowState(EFlowState s) { *(GetField<EFlowState>(this, 0x58)) = s; };
   void DrawDebugMetrics();
   CGameGlobalObjects* GetGlobalObjects() { return GetField<CGameGlobalObjects>(this, 0x54); }
 };

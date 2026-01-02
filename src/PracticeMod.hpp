@@ -19,7 +19,6 @@ public:
 
   void render();
   void HandleInputs();
-  void update(float d) const;
 
   void pauseScreenClosed();
   void pauseScreenOpened();

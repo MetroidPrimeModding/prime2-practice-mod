@@ -49,14 +49,21 @@ public:
   // inline CRandom16 *GetActiveRandom() const { return *GetField<CRandom16 *>(this, 0x900); }
   // inline CPlayerState *GetPlayerState() const { return mpPlayerState.RawPointer(); }
   // inline CWorldLayerState *GetWorldLayerState() const { return worldLayerState.RawPointer(); }
-  // CWorld *GetWorld() const { return *GetField<CWorld *>(this, 0x850); };
+  CWorld *GetWorld() const { return *GetField<CWorld *>(this, 0x1604); };
   // CWorldTransManager *WorldTransManager() const { return GetField<CWorldTransManager>(this, 0x8c4); }
   // CPlayer *Player() const { return *GetField<CPlayer *>(this, 0x84C); };
   // CObjectList *GetAllObjs() { return *GetField<CObjectList *>(this, 0x810); };
   // CEntity *ObjectById(TUniqueId uid) { return GetAllObjs()->GetObjectById(uid); }
   // inline CCameraManager *x870_cameraManager() { return *GetField<CCameraManager *>(this, 0x870); };
 
-  void SetShouldQuitGame(bool should) { GetField<StateManagerFlags>(this, 0xf94)->xf94_25_quitGame = should; }
+  void SetShouldQuitGame(bool should) {
+    u8* flag = GetField<u8>(this, 0x294c);
+    if (should) {
+      *flag = (*flag & 0xBF) | 0x40;
+    } else {
+      *flag = (*flag & 0xBF);
+    }
+  }
 
   void DrawWorld() const;
   void DrawDebugStuff() const;

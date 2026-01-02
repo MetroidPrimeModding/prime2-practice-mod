@@ -59,6 +59,8 @@ set(SOURCE_FILES
         src/include/prime/CActor.hpp
         src/include/prime/CPauseScreen.hpp
         src/include/prime/CHealthInfo.hpp
+        src/include/prime/CWorldState.hpp
+        src/include/prime/CWorld.hpp
 
         src/PracticeMod.hpp
         src/include/GetField.hpp
