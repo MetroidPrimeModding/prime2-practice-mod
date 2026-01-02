@@ -37,6 +37,9 @@ void PracticeMod::pauseScreenClosed() {
 void PracticeMod::pauseScreenOpened() {
   this->pauseScreenActive = true;
 }
+void PracticeMod::handlePosLoadIfNeeded(CPlayer *player) {
+  GUI::handlePosIfNeeded(player);
+}
 
 void PracticeMod::HandleInputs() {
   if (this->pauseScreenActive && this->menuActive) {
@@ -86,7 +89,7 @@ void PracticeMod::HandleInputs() {
       GUI::loadPos();
       hotkeyInputTimeout = 0;
     }
-    if (downPresses >= 2) {
+    if (downPresses >= 3) {
       GUI::savePos();
       hotkeyInputTimeout = 0;
     }

@@ -1,8 +1,10 @@
 #pragma once
 
 #include "GetField.hpp"
+#include "rstl/auto_ptr.h"
 #include "types.h"
 
+class CGameArea;
 class CMapWorld;
 
 class IWorld {
@@ -63,9 +65,9 @@ public:
   void SetLoadPauseState(bool paused);
   // void ScheduleAreaToLoad(CGameArea *area, CStateManager *mgr);
   // void MoveToChain(CGameArea *area, EChain chain);
-  // inline rstl::vector<rstl::auto_ptr<CGameArea>> *areas() {
-    // return GetField<rstl::vector<rstl::auto_ptr<CGameArea>>>(this, 0x18);
-  // };
+  rstl::vector<rstl::auto_ptr<CGameArea>> *areas() {
+    return GetField<rstl::vector<rstl::auto_ptr<CGameArea>>>(this, 0x18);
+  };
 };
 
 class CDummyWorld : public IWorld {

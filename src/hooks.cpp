@@ -41,6 +41,7 @@ DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
 DECLARE_FUNCTION_REPLACEMENT(CPlayer_ProcessInput) {
   static void Callback(CPlayer *self, double dt, CFinalInput *input, CStateManager *mgr) {
     Orig(self, dt, input, mgr);
+    PracticeMod::GetInstance()->handlePosLoadIfNeeded(self);
   }
 };
 

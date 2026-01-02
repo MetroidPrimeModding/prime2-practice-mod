@@ -10,6 +10,7 @@ class CCameraManager;
 class CGameState {
 public:
   void SetCurrentWorldId(CAssetId id);
+  CAssetId CurrentWorldAssetId();
   CWorldState &StateForWorld(unsigned int world);
   CWorldState &CurrentWorldState();
   CPlayerState **GetPlayerState(int idx);

@@ -22,6 +22,8 @@ public:
 
   void pauseScreenClosed();
   void pauseScreenOpened();
+
+  void handlePosLoadIfNeeded(CPlayer *player);
 private:
   void renderMenu();
   float hotkeyInputTimeout = 0;

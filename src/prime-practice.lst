@@ -91,3 +91,4 @@
 0x801425e0 _ZN10CGameState17CurrentWorldStateEv
 0x80142590 _ZN10CGameState17SetCurrentWorldIdEj
 0x8004eb0c _ZN6CWorld17SetLoadPauseStateEb
+0x80142604 _ZN10CGameState19CurrentWorldAssetIdEv

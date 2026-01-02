@@ -61,6 +61,7 @@ set(SOURCE_FILES
         src/include/prime/CHealthInfo.hpp
         src/include/prime/CWorldState.hpp
         src/include/prime/CWorld.hpp
+        src/include/prime/CGameArea.hpp
 
         src/PracticeMod.hpp
         src/include/GetField.hpp
