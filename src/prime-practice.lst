@@ -80,3 +80,4 @@
 0x80418eb8 gpGameState
 0x803db6e0 g_CStateManager
 0x80013530 _ZN7CPlayer12ProcessInputEdP11CFinalInputP13CStateManager
+0x80048cec _ZNK20CArchitectureMessage7GetParmEv

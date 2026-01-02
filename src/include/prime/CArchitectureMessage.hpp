@@ -53,7 +53,10 @@ struct CArchMsgParmReal32 : IArchMsgParm {
 };
 
 struct CArchMsgParmUserInput : IArchMsgParm {
+private:
   CFinalInput x4_parm;
+public:
+  CFinalInput *GetInput() { return &x4_parm; }
 };
 
 struct CArchMsgParmControllerStatus : IArchMsgParm {
@@ -66,4 +69,6 @@ public:
   EArchMsgTarget x0_target;
   EArchMsgType x4_type;
   rstl::rc_ptr<IArchMsgParm> x8_parm;
+
+  IArchMsgParm *GetParm() const;
 };

@@ -35,12 +35,17 @@ DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
   static CIOWin::EMessageReturn Callback(CMainFlow *thiz, const CArchitectureMessage &msg, CArchitectureQueue &queue) {
     CIOWin::EMessageReturn res = Orig(thiz, msg, queue);
     if (msg.x4_type == EArchMsgType_UserInput) {
-      for (int controller = 0; controller < 4; ++controller) {
-        memcpy(PracticeMod::GetInstance()->inputs + controller,
-               &g_CStateManager.GetFinalInput()[controller],
-               sizeof(CFinalInput));
+      CArchMsgParmUserInput *status = (CArchMsgParmUserInput *)(msg.GetParm());
+      CFinalInput *input = status->GetInput();
+      // The mod 4 is just for safety
+      memcpy(&PracticeMod::GetInstance()->inputs[input->ControllerIdx() % 4],
+             input,
+             sizeof(CFinalInput));
+      if (input->ControllerIdx() == 0) {
+        PracticeMod::GetInstance()->HandleInputs();
+        // TODO: move this to hook in Game::Update or something
+        PracticeMod::GetInstance()->update(0);
       }
-      PracticeMod::GetInstance()->HandleInputs();
     }
     return res;
   }
