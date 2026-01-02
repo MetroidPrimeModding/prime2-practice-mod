@@ -54,6 +54,9 @@ set(SOURCE_FILES
         src/include/prime/CArchitectureQueue.hpp
         src/include/prime/CIOWin.hpp
         src/include/prime/CIOWinManager.hpp
+        src/include/prime/CPlayer.hpp
+        src/include/prime/CPhysicsActor.hpp
+        src/include/prime/CActor.hpp
 
         src/PracticeMod.hpp
         src/include/GetField.hpp

@@ -5,6 +5,7 @@
 #include "prime/CMain.hpp"
 #include "prime/CMainFlow.hpp"
 #include "prime/CStateManager.hpp"
+#include "prime/CPlayer.hpp"
 #include "utils/ReplaceFunction.hpp"
 #include <os.h>
 #include <prime/CRandom16.hpp>
@@ -30,22 +31,27 @@ DECLARE_FUNCTION_REPLACEMENT(CMain_DrawDebugMetrics) {
 };
 
 // CMainFlow::OnMessage
-// DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
-//   static CIOWin::EMessageReturn Callback(CMainFlow *thiz, const CArchitectureMessage &msg, CArchitectureQueue &queue) {
-//     if (msg.x4_type == EArchMsgType_UserInput) {
-//       CArchMsgParmUserInput *status = (CArchMsgParmUserInput *)msg.x8_parm.RawPointer();
-//       // The mod 4 is just for safety
-//       PracticeMod::GetInstance()->inputs[status->x4_parm.ControllerIdx() % 4] = status->x4_parm;
-//       if (status->x4_parm.ControllerIdx() == 0) {
-//         PracticeMod::GetInstance()->HandleInputs();
-//         // TODO: move this to hook in Game::Update or something
-//         PracticeMod::GetInstance()->update(0);
-//       }
-//     }
-//
-//     return Orig(thiz, msg, queue);
-//   }
-// };
+DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
+  static CIOWin::EMessageReturn Callback(CMainFlow *thiz, const CArchitectureMessage &msg, CArchitectureQueue &queue) {
+    CIOWin::EMessageReturn res = Orig(thiz, msg, queue);
+    if (msg.x4_type == EArchMsgType_UserInput) {
+      for (int controller = 0; controller < 4; ++controller) {
+        memcpy(PracticeMod::GetInstance()->inputs + controller,
+               &g_CStateManager.GetFinalInput()[controller],
+               sizeof(CFinalInput));
+      }
+      PracticeMod::GetInstance()->HandleInputs();
+    }
+    return res;
+  }
+};
+
+// CPlayer::ProcessInput
+DECLARE_FUNCTION_REPLACEMENT(CPlayer_ProcessInput) {
+  static void Callback(CPlayer *self, double dt, CFinalInput *input, CStateManager *mgr) {
+    Orig(self, dt, input, mgr);
+  }
+};
 
 // CStateManager::Update
 // TODO
@@ -70,7 +76,8 @@ DECLARE_FUNCTION_REPLACEMENT(CRandom16_Next) {
 void InstallHooks() {
   CGraphics_EndScene::InstallAtFuncPtr(&CGraphics::EndScene);
   CMain_DrawDebugMetrics::InstallAtFuncPtr(&CMain::DrawDebugMetrics);
-  // CMainFlow_OnMessage::InstallAtFuncPtr(&CMainFlow::OnMessage);
+  CMainFlow_OnMessage::InstallAtFuncPtr(&CMainFlow::OnMessage);
+  CPlayer_ProcessInput::InstallAtFuncPtr(&CPlayer::ProcessInput);
   // TODO
   //CStateManager_Update::InstallAtFuncPtr(&CStateManager::Update);
   CRandom16_Next::InstallAtFuncPtr(&CRandom16::Next);

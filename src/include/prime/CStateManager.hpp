@@ -8,6 +8,7 @@
 #include "rstl/vector.h"
 #include "types.h"
 
+class CFinalInput;
 class CPlayerState;
 class CWorldLayerState;
 class CGameState;
@@ -30,30 +31,31 @@ struct StateManagerFlags {
 
 class CStateManager {
 
-  PADDING(0x8b8);
-  rstl::rc_ptr<CPlayerState> mpPlayerState;
-  PADDING(12);
-  rstl::rc_ptr<CWorldLayerState> worldLayerState;
+  // PADDING(0x8b8);
+  // rstl::rc_ptr<CPlayerState> mpPlayerState;
+  // PADDING(12);
+  // rstl::rc_ptr<CWorldLayerState> worldLayerState;
 
 public:
-  static inline CStateManager *instance() { return ((CStateManager *)0x8045A1A8); }
   enum EInitPhase { kInit_LoadWorld = 0, kInit_LoadFirstArea = 1, kInit_Done = 2 };
 
   void InitializeState(uint WorldAssetId, TAreaId AreaId, uint AreaAssetId);
   void Update(float dt);
 
-  inline CPlayer *GetPlayer() const { return *GetField<CPlayer *>(this, 0x84C); }
-  inline EInitPhase GetInitPhase() const { return *GetField<EInitPhase>(this, 0xB3C); }
-  inline CRandom16 *GetRandom() const { return GetField<CRandom16>(this, 0x8FC); }
-  inline CRandom16 *GetActiveRandom() const { return *GetField<CRandom16 *>(this, 0x900); }
-  inline CPlayerState *GetPlayerState() const { return mpPlayerState.RawPointer(); }
-  inline CWorldLayerState *GetWorldLayerState() const { return worldLayerState.RawPointer(); }
-  CWorld *GetWorld() const { return *GetField<CWorld *>(this, 0x850); };
-  CWorldTransManager *WorldTransManager() const { return GetField<CWorldTransManager>(this, 0x8c4); }
-  CPlayer *Player() const { return *GetField<CPlayer *>(this, 0x84C); };
-  CObjectList *GetAllObjs() { return *GetField<CObjectList *>(this, 0x810); };
-  CEntity *ObjectById(TUniqueId uid) { return GetAllObjs()->GetObjectById(uid); }
-  inline CCameraManager *x870_cameraManager() { return *GetField<CCameraManager *>(this, 0x870); };
+  inline CFinalInput *GetFinalInput() const { return GetField<CFinalInput>(this, 0x153C); }
+  inline CPlayer *GetPlayer() const { return *GetField<CPlayer *>(this, 0x14FC); }
+  inline CPlayer *GetPlayerState() const { return *GetField<CPlayer *>(this, 0x15FC); }
+  // inline EInitPhase GetInitPhase() const { return *GetField<EInitPhase>(this, 0xB3C); }
+  // inline CRandom16 *GetRandom() const { return GetField<CRandom16>(this, 0x8FC); }
+  // inline CRandom16 *GetActiveRandom() const { return *GetField<CRandom16 *>(this, 0x900); }
+  // inline CPlayerState *GetPlayerState() const { return mpPlayerState.RawPointer(); }
+  // inline CWorldLayerState *GetWorldLayerState() const { return worldLayerState.RawPointer(); }
+  // CWorld *GetWorld() const { return *GetField<CWorld *>(this, 0x850); };
+  // CWorldTransManager *WorldTransManager() const { return GetField<CWorldTransManager>(this, 0x8c4); }
+  // CPlayer *Player() const { return *GetField<CPlayer *>(this, 0x84C); };
+  // CObjectList *GetAllObjs() { return *GetField<CObjectList *>(this, 0x810); };
+  // CEntity *ObjectById(TUniqueId uid) { return GetAllObjs()->GetObjectById(uid); }
+  // inline CCameraManager *x870_cameraManager() { return *GetField<CCameraManager *>(this, 0x870); };
 
   void SetShouldQuitGame(bool should) { GetField<StateManagerFlags>(this, 0xf94)->xf94_25_quitGame = should; }
 
@@ -62,3 +64,5 @@ public:
   CFrustum SetupViewForDraw(const SViewport &vp) const;
   void ResetViewAfterDraw(const SViewport &backupViewport, const CTransform4f &backupViewMatrix) const;
 };
+
+extern CStateManager g_CStateManager;

@@ -78,3 +78,5 @@
 0x802c0b78 _ZN9CGraphics11FlushStreamEv
 0x80418eb4 gpMain
 0x80418eb8 gpGameState
+0x803db6e0 g_CStateManager
+0x80013530 _ZN7CPlayer12ProcessInputEdP11CFinalInputP13CStateManager

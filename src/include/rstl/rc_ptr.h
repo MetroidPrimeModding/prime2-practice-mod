@@ -6,9 +6,9 @@ RSTL_BEGIN
 
 /** Reference counting pointer. Needs to be fixed so it actually counts references */
 template <typename T> class rc_ptr {
+public:
   T **mpRawPtr;
 
-public:
   inline T *RawPointer() const {
     if (mpRawPtr == nullptr) {
       return nullptr;

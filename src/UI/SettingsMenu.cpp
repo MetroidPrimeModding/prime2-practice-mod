@@ -39,13 +39,14 @@ namespace GUI {
       }
 
       if (ImGui::TreeNode("RNG")) {
-        CStateManager *stateManager = CStateManager::instance();
-        CRandom16 *rng = stateManager->GetRandom();
+        CStateManager *stateManager = &g_CStateManager;
+        // TODO: rng
+        // CRandom16 *rng = stateManager->GetRandom();
         // ImGui::Text("Address of RNG: %08x", (u32)(&rng->m_seed));
 
         ImGui::Text("Warning: locking may crash sometimes!");
         BITFIELD_CHECKBOX("Lock RNG value", SETTINGS.RNG_lockSeed);
-        drawHex32Editor("RNG value", &rng->m_seed);
+        // drawHex32Editor("RNG value", &rng->m_seed);
         ImGui::TreePop();
       }
 

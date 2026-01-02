@@ -246,8 +246,9 @@ namespace GUI {
   }
 
   void drawRng() {
-    CStateManager *stateManager = CStateManager::instance();
-    CRandom16 *rng = stateManager->GetRandom();
-    ImGui::Text("RNG: %08x", rng->GetSeed());
+    CStateManager *stateManager = &g_CStateManager;
+    // TODO: rng
+    // CRandom16 *rng = stateManager->GetRandom();
+    // ImGui::Text("RNG: %08x", rng->GetSeed());
   }
 } // namespace GUI
