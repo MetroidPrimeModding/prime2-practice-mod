@@ -4,8 +4,9 @@
 #include "prime/CGraphics.hpp"
 #include "prime/CMain.hpp"
 #include "prime/CMainFlow.hpp"
-#include "prime/CStateManager.hpp"
+#include "prime/CPauseScreen.hpp"
 #include "prime/CPlayer.hpp"
+#include "prime/CStateManager.hpp"
 #include "utils/ReplaceFunction.hpp"
 #include <os.h>
 #include <prime/CRandom16.hpp>
@@ -58,6 +59,31 @@ DECLARE_FUNCTION_REPLACEMENT(CPlayer_ProcessInput) {
   }
 };
 
+DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessInput) {
+  static void Callback(CPauseScreen *self, CFinalInput &input) {
+    // TODO: find similar checks for convenience to the user
+    //if (!self->IsLoaded()) return;
+    //if (self->x8_curSubscreen == CPauseScreen::ESubScreen_ToGame) return;
+
+    // if (self->InputEnabled()) {
+    PracticeMod::GetInstance()->pauseScreenOpened();
+    if (input.PStart()) {
+      PracticeMod::GetInstance()->pauseScreenClosed();
+      Orig(self, input);
+      return;
+      // Play some noises too
+      // CSfxManager::SfxStart(0x59A, 0x7F, 0x40, false, 0x7F, false, kInvalidAreaId.id);
+      // self->StartTransition(0.5f, mgr, CPauseScreen::ESubScreen_ToGame, 2);
+    } else if (input.PZ()) {
+      PracticeMod::GetInstance()->menuActive = !PracticeMod::GetInstance()->menuActive;
+    }
+    // }
+    if (!PracticeMod::GetInstance()->menuActive) {
+      Orig(self, input);
+    }
+  }
+};
+
 // CStateManager::Update
 // TODO
 // DECLARE_FUNCTION_REPLACEMENT(CStateManager_Update) {
@@ -83,6 +109,7 @@ void InstallHooks() {
   CMain_DrawDebugMetrics::InstallAtFuncPtr(&CMain::DrawDebugMetrics);
   CMainFlow_OnMessage::InstallAtFuncPtr(&CMainFlow::OnMessage);
   CPlayer_ProcessInput::InstallAtFuncPtr(&CPlayer::ProcessInput);
+  CPauseScreen_ProcessInput::InstallAtFuncPtr(&CPauseScreen::ProcessInput);
   // TODO
   //CStateManager_Update::InstallAtFuncPtr(&CStateManager::Update);
   CRandom16_Next::InstallAtFuncPtr(&CRandom16::Next);

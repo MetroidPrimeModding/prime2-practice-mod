@@ -12,6 +12,8 @@ namespace GUI {
   void drawPlayerMenu() {
     if (ImGui::TreeNode("Player")) {
       ImGui::Text("TODO");
+
+      ImGui::TreePop();
     }
   }
 

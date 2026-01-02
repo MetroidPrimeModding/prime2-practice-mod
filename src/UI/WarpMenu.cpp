@@ -8,6 +8,8 @@ namespace GUI {
   void drawWarpMenu() {
     if (ImGui::TreeNode("Warps")) {
       ImGui::Text("TODO");
+
+      ImGui::TreePop();
     }
   }
 }

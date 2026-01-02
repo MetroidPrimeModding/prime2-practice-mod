@@ -99,7 +99,6 @@ void PracticeMod::renderMenu() {
   ImGui::NewFrame();
   GUI::qrNewFrame();
   bool render = this->pauseScreenActive && this->menuActive;
-  render = true; // TODO
   if (render) {
     ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Always, ImVec2(0, 0));
   } else {
@@ -126,7 +125,7 @@ void PracticeMod::renderMenu() {
     if (ImGui::TreeNode("v%s", PRAC_MOD_VERSION)) {
       ImGui::Text("Links (QR codes):");
       if (ImGui::TreeNode("Releases")) {
-        GUI::drawQRCode("https://github.com/MetroidPrimeModding/prime-practice-native/releases", 3.0f);
+        GUI::drawQRCode("https://github.com/MetroidPrimeModding/prime2-practice-mod/releases", 3.0f);
         ImGui::TreePop();
       }
       if (ImGui::TreeNode("Discord")) {

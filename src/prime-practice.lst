@@ -81,3 +81,4 @@
 0x803db6e0 g_CStateManager
 0x80013530 _ZN7CPlayer12ProcessInputEdP11CFinalInputP13CStateManager
 0x80048cec _ZNK20CArchitectureMessage7GetParmEv
+0x80208698 _ZN12CPauseScreen12ProcessInputERK11CFinalInput

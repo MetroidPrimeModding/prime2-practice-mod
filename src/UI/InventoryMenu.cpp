@@ -13,6 +13,8 @@ namespace GUI {
   void drawInventoryMenu() {
     if (ImGui::TreeNode("Inventory")) {
       ImGui::Text("TODO");
+
+      ImGui::TreePop();
     }
   }
 

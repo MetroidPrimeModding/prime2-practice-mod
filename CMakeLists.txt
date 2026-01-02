@@ -57,6 +57,7 @@ set(SOURCE_FILES
         src/include/prime/CPlayer.hpp
         src/include/prime/CPhysicsActor.hpp
         src/include/prime/CActor.hpp
+        src/include/prime/CPauseScreen.hpp
 
         src/PracticeMod.hpp
         src/include/GetField.hpp
