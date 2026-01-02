@@ -1,0 +1,13 @@
+*.dol
+*.rel
+/mp1/
+/dolphin/
+/build/
+/.idea/
+/cmake-build-*/
+*.pyc
+/Dolphin.app
+/dolphin-user
+.DS_Store
+target/
+src/Tweaks
