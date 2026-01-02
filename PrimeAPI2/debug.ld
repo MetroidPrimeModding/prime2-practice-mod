@@ -35,16 +35,7 @@ PHDRS
 */
 SECTIONS
 {
-  . = 0x8056A7E4;
-  .gap_vsnprintf :
-  {
-    . = ALIGN(4);
-     *(.text._vsnprintf*)
-    ASSERT(((0x8056A7E4 + 0x1610) > .), "gap_vsnprintf section too large");
-  } :gap_vsnprintf
-  _GAP_VSNPRINGF_END = .;
-
-  . = 0x805A02F8;
+  . = _LINK_START;
   .gap_atlas :
   {
     . = ALIGN(4);
@@ -57,7 +48,6 @@ SECTIONS
   } :gap_atlas
   _GAP_ATLAS_END = .;
 
-  . = _LINK_START;
   .imgui :
   {
     . = ALIGN(4);

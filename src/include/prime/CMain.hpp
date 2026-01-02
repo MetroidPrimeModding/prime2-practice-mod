@@ -15,4 +15,5 @@ typedef enum EFlowState {
 class CMain {
 public:
   void SetFlowState(EFlowState s) { *(GetField<EFlowState>(this, 0x12c)) = s; };
+  void DrawDebugMetrics();
 };

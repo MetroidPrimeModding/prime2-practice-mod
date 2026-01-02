@@ -22,54 +22,6 @@ PracticeMod::PracticeMod() {
   ImGuiEngine::ImGui_Init_Style();
   GUI::initQR();
   this->pauseScreenClosed();
-
-  // Patch CScriptTrigger so we can attach a value to it
-  // CScriptTrigger::CScriptTrigger
-  // 50A03E30 rlwimi r0, r5, 7, 24, 24
-  // 98140148 stb r0, 0x148(r20)
-  // lbz r0, 0x148(r20) 0x88140148
-
-  *((u32 *) 0x80076f0c) = 0x90940148; // stw r4, 0x148(r20)
-  *((u32 *) 0x80076f10) = 0x50A03E30; // rlwimi r0, r5, 7, 24, 24
-  *((u32 *) 0x80076f14) = 0x98140148; // stb r0, 0x148(r20)
-
-  // Patch file select IGT to mm:ss
-  // r5 contains number of seconds
-  // we want 5 and 6 as out, so
-
-  // r7 = 60
-  // r7 = r5 / r7 (seconds / 60) = minutes
-  // r6 = r7 * 60 (minutes * 60)
-  // r6 = r5 - r6 (seconds - (minutes * 60))
-  // r5 = r7 // minutes
-  /*
-  li 7, 60
-  divw 7, 5, 7
-  mulli 6, 7, 60
-  sub 6, 5, 6
-  mr 5, 7
-   */
-
-  // nop out our region and overwrite
-  for (u32 i = 0x8001FEF4; i <= 0x8001FF38; i += 4) {
-    *((u32 *) i) = 0x60000000; // nop
-  }
-  *((u32 *) 0x8001FEF4) = 0x38e0003C; // li r7, 60
-  *((u32 *) 0x8001FEF8) = 0x7CE53BD6; // divw r7, r5, r7
-  *((u32 *) 0x8001FEFC) = 0x1CC7003C; // muli r6, r7, 60
-  *((u32 *) 0x8001FF00) = 0x7CC62850; // sub r6, r5, r6
-  *((u32 *) 0x8001FF04) = 0x7CE53B78; // mr r5, r7
-
-  // Swap what text is used for ELAPSED to blank
-  *((u32 *) 0x8001FFB8) = 0x3880005C; // li r4, 92 - which is blank
-
-  // This will cause the crash screen to appear every time
-  *((u32 *) 0x802d6a44) = 0x60000000;
-
-#if DEBUG
-  // force splash disabled
-  *((u32*)0x8003732c) = 0x38000001; // li, r0, 1
-#endif
 }
 
 void PracticeMod::render() {
@@ -142,6 +94,7 @@ void PracticeMod::HandleInputs() {
 void PracticeMod::renderMenu() {
   ImGuiIO &io = ImGui::GetIO();
   io.DisplaySize = ImVec2(SVIEWPORT_GLOBAL->x8_width, SVIEWPORT_GLOBAL->xc_height);
+  OSReport("Display size: %f, %f\n", io.DisplaySize.x, io.DisplaySize.y);
   io.DeltaTime = 1.f / 60.f;
 
   ImGui::NewFrame();
@@ -226,11 +179,6 @@ void PracticeMod::update(float dt) const {
           c = (c + 1 + i + j) * c - j;
         }
       }
-      ImDrawList *dl = ImGui::GetForegroundDrawList();
-      char text[64];
-      int l = stbsp_snprintf(text, sizeof(text), "lag value: %d", c);
-      dl->AddText(ImVec2(20, 20), IM_COL32(255, 255, 255, 255),
-                  text, text + l);
     }
   }
 }
@@ -260,6 +208,7 @@ void warp(uint32_t world, uint32_t area) {
 PracticeMod *pracModInstance = nullptr;
 PracticeMod *PracticeMod::GetInstance() {
   if (!pracModInstance) {
+    OSReport("Initializing practice mod\n");
     pracModInstance = new PracticeMod();
   }
   return pracModInstance;

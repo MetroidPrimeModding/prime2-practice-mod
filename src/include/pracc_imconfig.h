@@ -175,9 +175,9 @@ static inline double ImFabsD(double x) { return x > 0 ? x : -x; }
 #define ImSqrt(X) CMath::SqrtF(X)
 // TODO: optimize to float
 #define ImFmod(X, Y) fmod((X), (Y))
-#define ImCos(X) CMath::FastCosR(X)
-#define ImSin(X) CMath::FastSinR(X)
-#define ImAcos(X) CMath::FastArcCosR(X)
+#define ImCos(X) cos(X)
+#define ImSin(X) sin(X)
+#define ImAcos(X) acos(X)
 #define ImAtan2(Y, X) atan2f((Y), (X))
 #define ImAtof(STR) atof(STR)
 #define ImCeil(X) CMath::CeilingF(X)

@@ -4,6 +4,6 @@
 source ./build.sh "$@"
 
 # copy the built binary to the patcher dir
-cp -v "${EXTERNAL_BUILD_DIR}/default_mod.dol" ../mp1/files/default.dol
-cp -v "${EXTERNAL_BUILD_DIR}/default_mod.dol" ../mp1/sys/main.dol
+cp -v "${EXTERNAL_BUILD_DIR}/default_mod.dol" ../mp2/files/default.dol
+cp -v "${EXTERNAL_BUILD_DIR}/default_mod.dol" ../mp2/sys/main.dol
 

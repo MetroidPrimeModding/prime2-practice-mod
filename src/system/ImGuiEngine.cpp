@@ -72,10 +72,10 @@ void ImGuiEngine::ImGui_Render_GX(const ImDrawData *drawData) {
   memset(&vp, 0, sizeof(CTransform4f));
   float theta = PI / 2.0;
   vp.mtx[0][0] = 1;
-  vp.mtx[1][1] = CMath::FastCosR(theta);
-  vp.mtx[1][2] = -CMath::FastSinR(theta);
-  vp.mtx[2][1] = CMath::FastSinR(theta);
-  vp.mtx[2][2] = CMath::FastCosR(theta);
+  vp.mtx[1][1] = cos(theta);
+  vp.mtx[1][2] = -sin(theta);
+  vp.mtx[2][1] = sin(theta);
+  vp.mtx[2][2] = cos(theta);
   CGraphics::SetModelMatrix(vp);
 
   //Set up vert format
@@ -90,7 +90,7 @@ void ImGuiEngine::ImGui_Render_GX(const ImDrawData *drawData) {
   };
   CGX::SetVtxDescv(desc);
   CGraphics::SetTevStates(6); // tex | color
-  CGX::SetNumTexGens(2); // Apparently required
+  CGX::SetNumTexGens(1); // Apparently required
   WGPipe *const pipe = (WGPipe *) 0xCC008000;
   for (int cmdListIdx = 0; cmdListIdx < drawData->CmdListsCount; cmdListIdx++) {
     const ImDrawList *cmdList = drawData->CmdLists[cmdListIdx];
@@ -182,10 +182,10 @@ void ImGuiEngine::ImGui_Render_Stream(const ImDrawData *drawData) {
   memset(&vp, 0, sizeof(CTransform4f));
   float theta = PI / 2.0;
   vp.mtx[0][0] = 1;
-  vp.mtx[1][1] = CMath::FastCosR(theta);
-  vp.mtx[1][2] = -CMath::FastSinR(theta);
-  vp.mtx[2][1] = CMath::FastSinR(theta);
-  vp.mtx[2][2] = CMath::FastCosR(theta);
+  vp.mtx[1][1] = cos(theta);
+  vp.mtx[1][2] = -sin(theta);
+  vp.mtx[2][1] = sin(theta);
+  vp.mtx[2][2] = cos(theta);
   CGraphics::SetModelMatrix(vp);
 
   constexpr int maxIdxPerBatch = 3 * 30;

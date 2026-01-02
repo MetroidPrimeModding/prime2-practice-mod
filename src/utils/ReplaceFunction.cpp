@@ -33,8 +33,8 @@ namespace ReplaceFunctionHookPool {
   constexpr size_t HookPoolSize = 256;
   constexpr size_t MaxHooks = HookPoolSize / (sizeof(ReplacementHookTrampoline));
 
-  ReplacementHookTrampoline hookPool[MaxHooks]{};
-  u32 currentHookIndex{0};
+  static ReplacementHookTrampoline hookPool[MaxHooks]{};
+  static u32 currentHookIndex{0};
   static_assert(sizeof(hookPool) <= HookPoolSize, "Hook pool size mismatch");
 
   ReplacementHookTrampoline* AllocateHookTrampoline() {

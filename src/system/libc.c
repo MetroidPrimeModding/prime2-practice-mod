@@ -65,3 +65,9 @@ float atan2f(float a, float b) {
 int toupper(int c) {
   return c & 0b11011111;
 }
+
+double __ieee754_log(double v);
+
+double log(double v) {
+  return __ieee754_log(v);
+}
