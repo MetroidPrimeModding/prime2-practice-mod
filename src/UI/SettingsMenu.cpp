@@ -28,25 +28,12 @@ namespace GUI {
         BITFIELD_CHECKBOX("Current Room time", SETTINGS.OSD_showCurrentRoomTime);
         BITFIELD_CHECKBOX("Room time: Use Loads", SETTINGS.OSD_roomTimeIsBasedOnLoadStart);
         BITFIELD_CHECKBOX("Frame time", SETTINGS.OSD_showFrameTime);
-        BITFIELD_CHECKBOX("Memory info", SETTINGS.OSD_showMemoryInfo);
-        ImGui::SameLine();
-        BITFIELD_CHECKBOX("Memory graph", SETTINGS.OSD_showMemoryGraph);
-        BITFIELD_CHECKBOX("Loads", SETTINGS.OSD_showLoads);
-        BITFIELD_CHECKBOX("RNG value", SETTINGS.OSD_showRng);
+        // BITFIELD_CHECKBOX("Memory info", SETTINGS.OSD_showMemoryInfo);
+        // ImGui::SameLine();
+        // BITFIELD_CHECKBOX("Memory graph", SETTINGS.OSD_showMemoryGraph);
+        // BITFIELD_CHECKBOX("Loads", SETTINGS.OSD_showLoads);
 
         // end in-game display
-        ImGui::TreePop();
-      }
-
-      if (ImGui::TreeNode("RNG")) {
-        CStateManager *stateManager = &g_CStateManager;
-        // TODO: rng
-        // CRandom16 *rng = stateManager->GetRandom();
-        // ImGui::Text("Address of RNG: %08x", (u32)(&rng->m_seed));
-
-        ImGui::Text("Warning: locking may crash sometimes!");
-        BITFIELD_CHECKBOX("Lock RNG value", SETTINGS.RNG_lockSeed);
-        // drawHex32Editor("RNG value", &rng->m_seed);
         ImGui::TreePop();
       }
 

@@ -21,3 +21,10 @@ public:
 
   s32 Range(s32 min, s32 max);
 };
+
+class CGlobalRandom {
+public:
+  CRandom16 *m_globalRng;
+};
+
+extern CGlobalRandom g_currentGlobalRandom;

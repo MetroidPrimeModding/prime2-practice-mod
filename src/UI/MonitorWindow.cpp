@@ -10,6 +10,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "imgui_internal.h"
+#include "prime/CPlayer.hpp"
 #include "stb_sprintf.h"
 
 namespace GUI {
@@ -19,11 +20,11 @@ namespace GUI {
 
   void drawInput(CFinalInput *inputs);
 
-  // void drawPos();
-  //
-  // void drawVelocity();
-  //
-  // void drawRotationalVelocity();
+  void drawPos();
+
+  void drawVelocity();
+
+  void drawRotationalVelocity();
 
   void drawIGT();
 
@@ -54,19 +55,16 @@ namespace GUI {
       }
       //TODO: drawRoomTime();
       if (SETTINGS.OSD_showPos) {
-        //TODO: drawPos();
+        drawPos();
       }
       if (SETTINGS.OSD_showVelocity) {
-        //TODO: drawVelocity();
+        drawVelocity();
       }
       if (SETTINGS.OSD_showRotationalVelocity) {
-        //TODO: drawRotationalVelocity();
+        drawRotationalVelocity();
       }
       if (SETTINGS.OSD_showFrameTime) {
         drawFrameTime();
-      }
-      if (SETTINGS.OSD_showRng) {
-        drawRng();
       }
       if (SETTINGS.OSD_showMemoryGraph || SETTINGS.OSD_showMemoryInfo) {
         // TODO: drawMemoryUsage();
@@ -94,6 +92,43 @@ namespace GUI {
       int minutes = ((int)time / 60) % 60;
       int hours = ((int)time / 60 / 60) % 60;
       ImGui::Text("%02d:%02d:%02d.%03d", hours, minutes, seconds, ms);
+    }
+  }
+
+  void drawPos() {
+    CPlayer *player = g_CStateManager.GetPlayer();
+
+    if (player) {
+      float x = player->getTransform()->matrix[3];
+      float y = player->getTransform()->matrix[7];
+      float z = player->getTransform()->matrix[11];
+      ImGui::Text("Pos: %7.2fx %7.2fy %7.2fz", x, y, z);
+    }
+  }
+
+  void drawVelocity() {
+    CPlayer *player = g_CStateManager.GetPlayer();
+
+    if (player) {
+      float x = player->GetVelocity()->x;
+      float y = player->GetVelocity()->y;
+      float z = player->GetVelocity()->z;
+      float h = CMath::SqrtF(x * x + y * y);
+
+      ImGui::Text("Vel: %5.2fx %5.2fy %5.2fz %5.2fh", x, y, z, h);
+    }
+  }
+
+  void drawRotationalVelocity() {
+    CPlayer *player = g_CStateManager.GetPlayer();
+
+    if (player) {
+      float x = player->GetAngularVelocity()->x;
+      float y = player->GetAngularVelocity()->y;
+      float z = player->GetAngularVelocity()->z;
+      float h = CMath::SqrtF(x * x + y * y);
+
+      ImGui::Text("Rot: %5.2fx %5.2fy %5.2fz %5.2fh", x, y, z, h);
     }
   }
 
@@ -245,10 +280,4 @@ namespace GUI {
     ImGui::End();
   }
 
-  void drawRng() {
-    CStateManager *stateManager = &g_CStateManager;
-    // TODO: rng
-    // CRandom16 *rng = stateManager->GetRandom();
-    // ImGui::Text("RNG: %08x", rng->GetSeed());
-  }
 } // namespace GUI
