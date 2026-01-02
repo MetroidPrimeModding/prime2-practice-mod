@@ -85,8 +85,8 @@ namespace GUI {
   }
 
   void drawIGT() {
-    CGameGlobalObjects *globals = ((CGameGlobalObjects *)0x80457798);
-    CGameState *gameState = globals->getGameState();
+    // CGameGlobalObjects *globals = CGameGlobalObjects::GetInstance();
+    CGameState *gameState = gpGameState;
     if (gameState) {
       double time = gameState->PlayTime();
       int ms = (int)(time * 1000.0) % 1000;

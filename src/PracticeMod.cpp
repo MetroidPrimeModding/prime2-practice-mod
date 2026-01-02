@@ -94,7 +94,6 @@ void PracticeMod::HandleInputs() {
 void PracticeMod::renderMenu() {
   ImGuiIO &io = ImGui::GetIO();
   io.DisplaySize = ImVec2(SVIEWPORT_GLOBAL->x8_width, SVIEWPORT_GLOBAL->xc_height);
-  OSReport("Display size: %f, %f\n", io.DisplaySize.x, io.DisplaySize.y);
   io.DeltaTime = 1.f / 60.f;
 
   ImGui::NewFrame();

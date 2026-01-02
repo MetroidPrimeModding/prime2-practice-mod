@@ -76,3 +76,5 @@
 0x802c10c4 _ZN9CGraphics11StreamColorEj
 0x802c11c0 _ZN9CGraphics11StreamBeginE13ERglPrimitive
 0x802c0b78 _ZN9CGraphics11FlushStreamEv
+0x80418eb4 gpMain
+0x80418eb8 gpGameState
