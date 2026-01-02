@@ -11,6 +11,8 @@
 
 #include "imgui_internal.h"
 #include "prime/CPlayer.hpp"
+#include "prime/CWorld.hpp"
+#include "prime/CWorldState.hpp"
 #include "stb_sprintf.h"
 
 namespace GUI {
@@ -28,7 +30,7 @@ namespace GUI {
 
   void drawIGT();
 
-  // void drawRoomTime();
+  void drawRoomTime();
 
   // void handleLoadBasedRoomTiming(double current_time);
 
@@ -53,7 +55,7 @@ namespace GUI {
       if (SETTINGS.OSD_showIGT) {
         drawIGT();
       }
-      //TODO: drawRoomTime();
+      drawRoomTime();
       if (SETTINGS.OSD_showPos) {
         drawPos();
       }
@@ -150,6 +152,47 @@ namespace GUI {
     char title[32];
     stbsp_snprintf(title, sizeof(title), "Frame time: %02.2f", ms);
     ImGui::PlotLines("", frames, GRAPH_LENGTH, 0, title, 0.f, 32.f, ImVec2(0, 40.0f));
+  }
+
+
+  u32 last_room = -1;
+  double last_time = 0;
+  double room_start_time = 0;
+
+  void drawRoomTime() {
+    CWorld *world = g_CStateManager.GetWorld();
+    CGameState *gameState = gpGameState;
+
+    if (gameState && world) {
+      CWorldState &state = gameState->CurrentWorldState();
+      double current_time = gameState->PlayTime();
+
+      u32 current_room = state.x4_areaId.id;
+      if (current_room != last_room) {
+        last_time = current_time - room_start_time;
+        room_start_time = current_time;
+        last_room = current_room;
+      }
+      double current_room_time = current_time - room_start_time;
+      if (SETTINGS.OSD_showPreviousRoomTime) {
+        int frames = (int)(last_time / (1.0 / 60.0));
+        int ms = (int)(last_time * 1000.0) % 1000;
+        int seconds = (int)last_time % 60;
+        int minutes = ((int)last_time / 60) % 60;
+        int hours = ((int)last_time / 60 / 60) % 60;
+        ImGui::Text("P: %02d:%02d:%02d.%03d|%d", hours, minutes, seconds, ms, frames);
+      }
+      if (SETTINGS.OSD_showCurrentRoomTime) {
+        if (SETTINGS.OSD_showPreviousRoomTime)
+          ImGui::SameLine();
+        int frames = (int)(current_room_time / (1.0 / 60.0));
+        int ms = (int)(current_room_time * 1000.0) % 1000;
+        int seconds = (int)current_room_time % 60;
+        int minutes = ((int)current_room_time / 60) % 60;
+        int hours = ((int)current_room_time / 60 / 60) % 60;
+        ImGui::Text("C: %02d:%02d:%02d.%03d|%d", hours, minutes, seconds, ms, frames);
+      }
+    }
   }
 
   void drawInput(CFinalInput *inputs) {

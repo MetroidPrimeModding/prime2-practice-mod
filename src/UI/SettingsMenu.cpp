@@ -24,9 +24,8 @@ namespace GUI {
         BITFIELD_CHECKBOX("Input", SETTINGS.OSD_showInput);
         ImGui::SameLine();
         BITFIELD_CHECKBOX("Time", SETTINGS.OSD_showIGT);
-        // BITFIELD_CHECKBOX("Previous Room time", SETTINGS.OSD_showPreviousRoomTime);
-        // BITFIELD_CHECKBOX("Current Room time", SETTINGS.OSD_showCurrentRoomTime);
-        // BITFIELD_CHECKBOX("Room time: Use Loads", SETTINGS.OSD_roomTimeIsBasedOnLoadStart);
+        BITFIELD_CHECKBOX("Previous Room time", SETTINGS.OSD_showPreviousRoomTime);
+        BITFIELD_CHECKBOX("Current Room time", SETTINGS.OSD_showCurrentRoomTime);
         BITFIELD_CHECKBOX("Frame time", SETTINGS.OSD_showFrameTime);
         // BITFIELD_CHECKBOX("Memory info", SETTINGS.OSD_showMemoryInfo);
         // ImGui::SameLine();

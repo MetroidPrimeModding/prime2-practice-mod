@@ -20,7 +20,6 @@ struct Settings {
   bool OSD_showIGT : 1 {true};
   bool OSD_showCurrentRoomTime : 1 {true};
   bool OSD_showPreviousRoomTime : 1 {true};
-  bool OSD_roomTimeIsBasedOnLoadStart : 1 {false};
   bool OSD_showLoads : 1 {DEBUG_TRUE};
 
   bool RNG_lockSeed{false};
