@@ -62,10 +62,13 @@ DECLARE_FUNCTION_REPLACEMENT(CPlayer_ProcessInput) {
 DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessInput) {
   static void Callback(CPauseScreen *self, CFinalInput &input) {
     // TODO: find similar checks for convenience to the user
-    //if (!self->IsLoaded()) return;
-    //if (self->x8_curSubscreen == CPauseScreen::ESubScreen_ToGame) return;
+    if (self->GetState() != CPauseScreen::EPauseScreenState::EState_Active) {
+      Orig(self, input);
+      return;
+    }
 
     // if (self->InputEnabled()) {
+    // TODO: only do this if not closing
     PracticeMod::GetInstance()->pauseScreenOpened();
     if (input.PStart()) {
       PracticeMod::GetInstance()->pauseScreenClosed();
@@ -77,6 +80,7 @@ DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessInput) {
     } else if (input.PZ()) {
       PracticeMod::GetInstance()->menuActive = !PracticeMod::GetInstance()->menuActive;
     }
+
     // }
     if (!PracticeMod::GetInstance()->menuActive) {
       Orig(self, input);

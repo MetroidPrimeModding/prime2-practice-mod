@@ -44,7 +44,6 @@ public:
 
   inline CFinalInput *GetFinalInput() const { return GetField<CFinalInput>(this, 0x153C); }
   inline CPlayer *GetPlayer() const { return *GetField<CPlayer *>(this, 0x14FC); }
-  inline CPlayer *GetPlayerState() const { return *GetField<CPlayer *>(this, 0x15FC); }
   // inline EInitPhase GetInitPhase() const { return *GetField<EInitPhase>(this, 0xB3C); }
   // inline CRandom16 *GetRandom() const { return GetField<CRandom16>(this, 0x8FC); }
   // inline CRandom16 *GetActiveRandom() const { return *GetField<CRandom16 *>(this, 0x900); }
