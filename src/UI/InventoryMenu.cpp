@@ -8,8 +8,8 @@
 static constexpr CPlayerState::EItemType GeneralItems[] = {
   CPlayerState::EItemType::EnergyTank, CPlayerState::EItemType::CombatVisor, CPlayerState::EItemType::ScanVisor,
   CPlayerState::EItemType::DarkVisor, CPlayerState::EItemType::EchoVisor, CPlayerState::EItemType::GrappleBeam,
-  CPlayerState::EItemType::SpaceJumpBoots, CPlayerState::EItemType::VariaSuit, CPlayerState::EItemType::DarkSuit,
-  CPlayerState::EItemType::LightSuit,
+  CPlayerState::EItemType::GravityBoost, CPlayerState::EItemType::SpaceJumpBoots, CPlayerState::EItemType::ScrewAttack,
+  CPlayerState::EItemType::VariaSuit, CPlayerState::EItemType::DarkSuit, CPlayerState::EItemType::LightSuit,
 };
 
 static constexpr CPlayerState::EItemType WeaponItems[] = {
@@ -34,6 +34,7 @@ static constexpr CPlayerState::EItemType KeyItems[] = {
   CPlayerState::EItemType::SkyTempleKey1, CPlayerState::EItemType::SkyTempleKey2, CPlayerState::EItemType::SkyTempleKey3,
   CPlayerState::EItemType::SkyTempleKey4, CPlayerState::EItemType::SkyTempleKey5, CPlayerState::EItemType::SkyTempleKey6,
   CPlayerState::EItemType::SkyTempleKey7, CPlayerState::EItemType::SkyTempleKey8, CPlayerState::EItemType::SkyTempleKey9,
+  CPlayerState::EItemType::EnergyTransferModulePickup, CPlayerState::EItemType::EnergyTransferModuleInventory,
 };
 
 struct SItemAmt {
@@ -45,45 +46,41 @@ struct SItemAmt {
 static constexpr SItemAmt StartingItems[] = {
   {CPlayerState::EItemType::VariaSuit},
   {CPlayerState::EItemType::PowerBeam},
+  {CPlayerState::EItemType::ChargeBeam},
   {CPlayerState::EItemType::CombatVisor},
   {CPlayerState::EItemType::ScanVisor},
+  {CPlayerState::EItemType::MorphBall},
 };
 
 static constexpr SItemAmt ILSItems[] = {
   {CPlayerState::EItemType::EnergyTank, 0},
-  {CPlayerState::EItemType::Missile, 15},
-  {CPlayerState::EItemType::ChargeBeam, 15},
+  {CPlayerState::EItemType::Missile, 5},
+  {CPlayerState::EItemType::ChargeBeam},
 
-  {CPlayerState::EItemType::MorphBall},
   {CPlayerState::EItemType::MorphBallBomb},
   {CPlayerState::EItemType::BoostBall},
   {CPlayerState::EItemType::SpiderBall},
-
-  {CPlayerState::EItemType::VariaSuit},
-  {CPlayerState::EItemType::GrappleBeam},
+  {CPlayerState::EItemType::SpaceJumpBoots},
 };
 
 static constexpr SItemAmt AnyPercentItems[] = {
-  {CPlayerState::EItemType::EnergyTank, 3},
-  {CPlayerState::EItemType::Missile, 35},
-  {CPlayerState::EItemType::SeekerLauncher},
+  {CPlayerState::EItemType::EnergyTank, 2},
+  {CPlayerState::EItemType::Missile, 25},
 
   {CPlayerState::EItemType::MorphBall},
   {CPlayerState::EItemType::MorphBallBomb},
   {CPlayerState::EItemType::BoostBall},
-  {CPlayerState::EItemType::PowerBomb, 5},
+  {CPlayerState::EItemType::PowerBomb, 3},
+  {CPlayerState::EItemType::ScrewAttack},
 
   {CPlayerState::EItemType::VariaSuit},
   {CPlayerState::EItemType::LightSuit},
 
   {CPlayerState::EItemType::DarkBeam},
   {CPlayerState::EItemType::LightBeam},
-  {CPlayerState::EItemType::AnnihilatorBeam},
-  {CPlayerState::EItemType::ChargeBeam},
 
   {CPlayerState::EItemType::DarkVisor},
-
-  {CPlayerState::EItemType::SpaceJumpBoots},
+  {CPlayerState::EItemType::GravityBoost},
 };
 
 static constexpr SItemAmt HundredPercentItems[] = {
@@ -181,7 +178,7 @@ namespace GUI {
       ImGui::SameLine();
       if (ImGui::Button("Any%")) {
         clearItems(playerState);
-        for (auto v : StartingItems) playerState->ReInitializePowerUp(v.item, v.count);
+        for (auto v : ILSItems) playerState->ReInitializePowerUp(v.item, v.count);
         for (auto v : AnyPercentItems) playerState->ReInitializePowerUp(v.item, v.count);
         for (auto v : KeyItems) playerState->ReInitializePowerUp(v, 1);
         refillItems(playerState);
