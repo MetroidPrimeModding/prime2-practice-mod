@@ -3,8 +3,10 @@
 #include "prime/CMain.hpp"
 #include "prime/CMainFlow.hpp"
 #include "prime/CPauseScreen.hpp"
+#include "prime/CPlayMovie.hpp"
 #include "prime/CPlayer.hpp"
 #include "prime/CStateManager.hpp"
+#include "stb_sprintf.h"
 #include "utils/ReplaceFunction.hpp"
 #include <prime/CRandom16.hpp>
 #include <settings.hpp>
@@ -79,6 +81,22 @@ DECLARE_FUNCTION_REPLACEMENT(CRandom16_Next) {
   }
 };
 
+DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
+  static void Callback(CMoviePlayer* self, char *path, double preloadSeconds, int loop, int deinterlace) {
+    OSReport("Playing movie: %s (preloadSeconds=%f loop=%d deinterlace=%d)\n", path, preloadSeconds, loop, deinterlace);
+
+    bool isAttract2 = strcmp("Video/Attract02_32.thp", path) == 0;
+    if (isAttract2) {
+      OSReport("Skipping attract 2, playing 9 instead\n");
+      char newPath[] = "Video/Attract09_31.thp";
+      Orig(self, newPath, preloadSeconds, loop, deinterlace);
+      return;
+    }
+
+    Orig(self, path, preloadSeconds, loop, deinterlace);
+  }
+};
+
 // clang-format on
 
 void InstallHooks() {
@@ -87,4 +105,5 @@ void InstallHooks() {
   CPlayer_ProcessInput::InstallAtFuncPtr(&CPlayer::ProcessInput);
   CPauseScreen_ProcessInput::InstallAtFuncPtr(&CPauseScreen::ProcessInput);
   CRandom16_Next::InstallAtFuncPtr(&CRandom16::Next);
+  CMoviePlayer_constructor::InstallAtFuncPtr(&CMoviePlayer::CMoviePlayerConstructor);
 }

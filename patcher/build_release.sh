@@ -19,7 +19,7 @@ fi
 #pyinstaller --onefile main.py
 
 mkdir "release/${VERSION}"
-mkdir "release/${VERSION}/prime-practice-${VERSION}/"
+mkdir "release/${VERSION}/prime2-practice-${VERSION}/"
 
 ../build.sh Release
 
@@ -30,19 +30,19 @@ cp -r \
   opening_practice.bnr \
   patch.sh patch.bat \
   ../README.md \
-  "release/${VERSION}/prime-practice-${VERSION}"
+  "release/${VERSION}/prime2-practice-${VERSION}"
 
-mkdir -p "release/${VERSION}/prime-practice-${VERSION}/pyelftools"
-rm -rf "release/${VERSION}/prime-practice-${VERSION}/pyelftools/test"
-rm -rf "release/${VERSION}/prime-practice-${VERSION}/pyelftools/examples"
-rm -rf "release/${VERSION}/prime-practice-${VERSION}/pyelftools/.git"
+mkdir -p "release/${VERSION}/prime2-practice-${VERSION}/pyelftools"
+rm -rf "release/${VERSION}/prime2-practice-${VERSION}/pyelftools/test"
+rm -rf "release/${VERSION}/prime2-practice-${VERSION}/pyelftools/examples"
+rm -rf "release/${VERSION}/prime2-practice-${VERSION}/pyelftools/.git"
 
 cd "release/${VERSION}/"
 
-find "prime-practice-${VERSION}" -iname "__pycache__" | xargs rm -r
+find "prime2-practice-${VERSION}" -iname "__pycache__" | xargs rm -r
 
-zip "prime-practice-${VERSION}.zip" \
-    -r "prime-practice-${VERSION}"/*
+zip "prime2-practice-${VERSION}.zip" \
+    -r "prime2-practice-${VERSION}"/*
 
-tar -czvf "prime-practice-${VERSION}.tar.gz" \
-    "prime-practice-${VERSION}"/*
+tar -czvf "prime2-practice-${VERSION}.tar.gz" \
+    "prime2-practice-${VERSION}"/*

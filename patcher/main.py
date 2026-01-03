@@ -9,7 +9,28 @@ from src.DolPatcher import patch_dol
 
 import hashlib
 
-KNOWN_MP1_MD5 = "eeacd0ced8e2bae491eca14f141a4b7c"
+KNOWN_MP2_MD5 = "ce781ad1452311ca86667cf8dbd7d112"
+
+def convert_ranges_to_gaps(ranges: list[list[int]]) -> list[list[int]]:
+    """
+    Convert a list of ranges to [start, end] gaps between them.
+    :param ranges:
+    :return:
+    """
+    # Convert ranges to gaps
+    result = []
+    last_end = 0x44000  # After FST
+    for r in ranges:
+        start = r[0]
+        if start > last_end:
+            result.append([last_end, start])
+        last_end = r[1]
+
+    # Final gap
+    result.append([last_end, 0x3E000000])  # End of disc
+    return result
+
+
 
 
 def patch_iso_file(inp_path, out_path, mod_path, ignore_hash=False):
@@ -26,10 +47,10 @@ def patch_iso_file(inp_path, out_path, mod_path, ignore_hash=False):
         m = hashlib.md5()
         m.update(inp_mmap)
         calculated_hash = m.hexdigest()
-        print(f"Expected: {calculated_hash}")
+        print(f"Expected: {KNOWN_MP2_MD5}")
         print(f"Actual:   {calculated_hash}")
-        if calculated_hash != KNOWN_MP1_MD5:
-            print("This is not an unmodified mp1 0-00 NTSC iso!")
+        if calculated_hash != KNOWN_MP2_MD5:
+            print("This is not an unmodified mp2 0-00 NTSC iso!")
             print("*** THIS MOST LIKELY WILL NOT WORK ***")
             try_anyway = input("Try anyway? (y/n)").lower()
             if try_anyway == 'y':
@@ -43,13 +64,25 @@ def patch_iso_file(inp_path, out_path, mod_path, ignore_hash=False):
     header = GCDiscHeader.parse(inp_reader_root)
     fst = FST.parse(inp_reader_root.with_offset(header.fst_offset))
 
+    print("Removing Video/Attract02_32.thp to make room for mod")
+    attract = fst.find(["Video", "Attract02_32.thp"])
+    attract.length = 0
+
     # Find the first file
     print("Finding suitable file gap")
-    ranges = fst.get_ranges()
-    first_file = ranges[0][0]
-    if first_file < 20 * 1000 * 1000:
-        print("Not enough room for practice mod at start of ISO... is this an unmodified ISO?")
+    gaps = convert_ranges_to_gaps(fst.get_ranges())
+    write_offset = None
+    for r in gaps:
+        size = r[1] - r[0]
+        if size >= 10 * 1000 * 1000:
+            write_offset = r[1]
+            break
+
+    if not write_offset:
+        print("Not enough room for practice mod... is this an unmodified ISO?")
         sys.exit(1)
+
+    print("Found room at offset: {:08X}".format(write_offset))
 
     # Ok, find and extract the dol
     print("Extracting DOL")
@@ -67,7 +100,7 @@ def patch_iso_file(inp_path, out_path, mod_path, ignore_hash=False):
 
     # Figure out our new offsets
     print("Determining file offsets for new files")
-    dol_offset = first_file - len(patched_dol_bytes)
+    dol_offset = write_offset - len(patched_dol_bytes)
     dol_offset -= dol_offset % 8192
 
     # Build our new FST entries
@@ -112,7 +145,7 @@ def patch_iso_file(inp_path, out_path, mod_path, ignore_hash=False):
     out_writer.write_bytes(patched_dol_fst_entry.offset, patched_dol_bytes)
 
     print("patching bnr")
-    out_writer.write_string(0x20, "Metroid Prime Practice Mod")
+    out_writer.write_string(0x20, "Echoes Practice Mod")
     bnr_fst = fst.find(["opening.bnr"])
     out_writer.write_bytes(bnr_fst.offset, bnr_bytes)
 
