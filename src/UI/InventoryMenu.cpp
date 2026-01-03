@@ -33,12 +33,12 @@ static constexpr CPlayerState::EItemType KeyItems[] = {
     CPlayerState::EItemType::DarkAgonKey1,   CPlayerState::EItemType::SkyTempleKey1,
     CPlayerState::EItemType::DarkAgonKey2,   CPlayerState::EItemType::SkyTempleKey2,
     CPlayerState::EItemType::DarkAgonKey3,   CPlayerState::EItemType::SkyTempleKey3,
-    CPlayerState::EItemType::IngHiveKey1,    CPlayerState::EItemType::SkyTempleKey4,
-    CPlayerState::EItemType::IngHiveKey2,    CPlayerState::EItemType::SkyTempleKey5,
-    CPlayerState::EItemType::IngHiveKey3,    CPlayerState::EItemType::SkyTempleKey6,
-    CPlayerState::EItemType::DarkTorvusKey1, CPlayerState::EItemType::SkyTempleKey7,
-    CPlayerState::EItemType::DarkTorvusKey2, CPlayerState::EItemType::SkyTempleKey8,
-    CPlayerState::EItemType::DarkTorvusKey3, CPlayerState::EItemType::SkyTempleKey9,
+    CPlayerState::EItemType::DarkTorvusKey1, CPlayerState::EItemType::SkyTempleKey4,
+    CPlayerState::EItemType::DarkTorvusKey2, CPlayerState::EItemType::SkyTempleKey5,
+    CPlayerState::EItemType::DarkTorvusKey3, CPlayerState::EItemType::SkyTempleKey6,
+    CPlayerState::EItemType::IngHiveKey1,    CPlayerState::EItemType::SkyTempleKey7,
+    CPlayerState::EItemType::IngHiveKey2,    CPlayerState::EItemType::SkyTempleKey8,
+    CPlayerState::EItemType::IngHiveKey3,    CPlayerState::EItemType::SkyTempleKey9,
 };
 
 static constexpr CPlayerState::EItemType MiscItems[] = {
