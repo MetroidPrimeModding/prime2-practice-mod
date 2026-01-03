@@ -5,24 +5,25 @@ on:
 
 jobs:
   build_installer:
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Run pyinstaller
         run: |
-          pip install PyInstaller
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade PyInstaller
           cd patcher
           pyinstaller --onefile main.py
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: main.exe
           path: patcher/dist/main.exe
