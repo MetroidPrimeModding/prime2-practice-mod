@@ -67,16 +67,17 @@ namespace GUI {
           player->getTransform()->y,
           player->getTransform()->z
       };
-      ImGui::DragFloat3("##pos", xyz, 1.f, -FLT_MAX, FLT_MAX, "%.3f", flags);
-      CTransform4f requestedTransform = *player->getTransform();
-      requestedTransform.x = xyz[0];
-      requestedTransform.y = xyz[1];
-      requestedTransform.z = xyz[2];
-      *player->getTransform() = requestedTransform;
-      player->getPos()->x = requestedTransform.x;
-      player->getPos()->y = requestedTransform.y;
-      player->getPos()->z = requestedTransform.z;
-      requestPosition(requestedTransform);
+      if (ImGui::DragFloat3("##pos", xyz, 1.f, -FLT_MAX, FLT_MAX, "%.3f", flags)) {
+        CTransform4f requestedTransform = *player->getTransform();
+        requestedTransform.x = xyz[0];
+        requestedTransform.y = xyz[1];
+        requestedTransform.z = xyz[2];
+        *player->getTransform() = requestedTransform;
+        player->getPos()->x = requestedTransform.x;
+        player->getPos()->y = requestedTransform.y;
+        player->getPos()->z = requestedTransform.z;
+        requestPosition(requestedTransform);
+      }
 
       if (ImGui::Button("IS on")) {
         player->GetAngularVelocity()->x = NAN;

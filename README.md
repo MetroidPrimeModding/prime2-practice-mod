@@ -65,6 +65,10 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Changelog
 
+### 1.1.2
+- Fix warps with player menu open
+- Re-order keys to be cleaner
+
 ### 1.1.1
 - Fix warp to Dark Torvus
 - Fix X/Y to be correct in the display
