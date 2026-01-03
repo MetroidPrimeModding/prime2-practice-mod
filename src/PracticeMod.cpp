@@ -20,6 +20,9 @@
 #define PAD_MAX_CONTROLLERS 4
 
 PracticeMod::PracticeMod() {
+  // This will cause the crash screen to appear every time
+  *((u32 *) 0x8028c604) = 0x60000000;
+
   ImGuiEngine::ImGui_Init();
   ImGuiEngine::ImGui_Init_Style();
   GUI::initQR();
