@@ -65,5 +65,11 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Changelog
 
+### 1.1.0
+- Fix some missing items
+- Fix item presets
+- Split warp menu into dark/light world
+- Automatically show the crash screen on crash
+
 ### 1.0.0
  - Initial Release
