@@ -63,6 +63,7 @@ set(SOURCE_FILES
         src/include/prime/CWorld.hpp
         src/include/prime/CGameArea.hpp
         src/include/prime/CPlayMovie.hpp
+        src/include/prime/CScriptSpawnPoint.hpp
 
         src/PracticeMod.hpp
         src/include/GetField.hpp

@@ -2,6 +2,7 @@
 
 #include "CGraphics.hpp"
 #include "CObjectList.hpp"
+#include "CScriptSpawnPoint.hpp"
 #include "GetField.hpp"
 #include "PrimeAPI.h"
 #include "rstl/rc_ptr.h"
@@ -69,6 +70,7 @@ public:
   void DrawDebugStuff() const;
   CFrustum SetupViewForDraw(const SViewport &vp) const;
   void ResetViewAfterDraw(const SViewport &backupViewport, const CTransform4f &backupViewMatrix) const;
+  void SpawnPlayerAtPoint(CScriptSpawnPoint *point, int playerIndex);
 };
 
 extern CStateManager g_CStateManager;

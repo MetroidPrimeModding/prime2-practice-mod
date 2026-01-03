@@ -97,6 +97,14 @@ DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
   }
 };
 
+DECLARE_FUNCTION_REPLACEMENT(CStateManger_SpawnPlayerAtPoint) {
+  static void Callback(CStateManager* self, CScriptSpawnPoint* point, int playerIndex) {
+    CTransform4f *transform = point->GetTransform();
+    OSReport("Spawning player at point: %08x pos %0.2f %0.2f %0.2f\n", point->getEditorID(), transform->x, transform->y, transform->z);
+    Orig(self, point, playerIndex);
+  }
+};
+
 // clang-format on
 
 void InstallHooks() {
@@ -106,4 +114,5 @@ void InstallHooks() {
   CPauseScreen_ProcessInput::InstallAtFuncPtr(&CPauseScreen::ProcessInput);
   CRandom16_Next::InstallAtFuncPtr(&CRandom16::Next);
   CMoviePlayer_constructor::InstallAtFuncPtr(&CMoviePlayer::CMoviePlayerConstructor);
+  CStateManger_SpawnPlayerAtPoint::InstallAtFuncPtr(&CStateManager::SpawnPlayerAtPoint);
 }

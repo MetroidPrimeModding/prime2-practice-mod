@@ -53,10 +53,10 @@ void PracticeMod::HandleInputs() {
 //    io->NavInputs[ImGuiNavInput_Input] = inputs[0].DY();
 
     // dpad
-    io->NavInputs[ImGuiNavInput_DpadLeft] = inputs[0].DDPLeft() || inputs[0].DLALeft();
-    io->NavInputs[ImGuiNavInput_DpadRight] = inputs[0].DDPRight() || inputs[0].DLARight();
-    io->NavInputs[ImGuiNavInput_DpadUp] = inputs[0].DDPUp() || inputs[0].DLAUp();
-    io->NavInputs[ImGuiNavInput_DpadDown] = inputs[0].DDPDown() || inputs[0].DLADown();
+    io->NavInputs[ImGuiNavInput_DpadLeft] = inputs[0].PDPLeft() || inputs[0].DLALeft();
+    io->NavInputs[ImGuiNavInput_DpadRight] = inputs[0].PDPRight() || inputs[0].DLARight();
+    io->NavInputs[ImGuiNavInput_DpadUp] = inputs[0].PDPUp() || inputs[0].DLAUp();
+    io->NavInputs[ImGuiNavInput_DpadDown] = inputs[0].PDPDown() || inputs[0].DLADown();
     // analog
     io->NavInputs[ImGuiNavInput_LStickLeft] = inputs[0].ARALeft();
     io->NavInputs[ImGuiNavInput_LStickRight] = inputs[0].ARARight();
