@@ -174,8 +174,8 @@ public:
       u8 c_updown: 1;
       u8 a : 1;
       u8 b : 1;
-      u8 y : 1;
       u8 x : 1;
+      u8 y : 1;
     };
     u8 btns1;
   };
@@ -196,8 +196,8 @@ public:
     struct {
       u8 pb : 1;
       u8 pa : 1;
-      u8 px: 1;
       u8 py: 1;
+      u8 px: 1;
       u8 pz: 1;
       u8 plt_digital: 1;
       u8 prt_digital: 1;

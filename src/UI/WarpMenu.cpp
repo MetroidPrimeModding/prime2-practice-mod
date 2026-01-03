@@ -292,7 +292,7 @@ const WarpArea AREAS_DARK_TORVUS[] = {
 const WarpWorld WARP_WORLD_DARK_TORVUS{
   .name="Dark Torvus",
   .world=0x3DFD2249,
-  .areas=AREAS_TORVUS_BOG,
+  .areas=AREAS_DARK_TORVUS,
   .areaCount=sizeof(AREAS_DARK_TORVUS) / sizeof(AREAS_DARK_TORVUS[0])
 };
 
