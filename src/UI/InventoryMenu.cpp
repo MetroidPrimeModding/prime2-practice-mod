@@ -69,17 +69,21 @@ static constexpr SItemAmt ILSItems[] = {
 };
 
 static constexpr SItemAmt AnyPercentItems[] = {
-    {CPlayerState::EItemType::EnergyTank, 2}, {CPlayerState::EItemType::Missile, 25},
+    {CPlayerState::EItemType::EnergyTank, 2},    {CPlayerState::EItemType::Missile, 25},
+    {CPlayerState::EItemType::SuperMissile},     {CPlayerState::EItemType::CannonBall},
 
-    {CPlayerState::EItemType::MorphBall},     {CPlayerState::EItemType::MorphBallBomb},
-    {CPlayerState::EItemType::BoostBall},     {CPlayerState::EItemType::PowerBomb, 3},
-    {CPlayerState::EItemType::ScrewAttack},
+    {CPlayerState::EItemType::MorphBall},        {CPlayerState::EItemType::MorphBallBomb},
+    {CPlayerState::EItemType::BoostBall},        {CPlayerState::EItemType::PowerBomb, 3},
+    {CPlayerState::EItemType::ScrewAttack},      {CPlayerState::EItemType::GravityBoost},
 
-    {CPlayerState::EItemType::VariaSuit},     {CPlayerState::EItemType::LightSuit},
+    {CPlayerState::EItemType::VariaSuit},        {CPlayerState::EItemType::LightSuit},
 
-    {CPlayerState::EItemType::DarkBeam},      {CPlayerState::EItemType::LightBeam},
+    {CPlayerState::EItemType::DarkBeam},         {CPlayerState::EItemType::LightBeam},
+    {CPlayerState::EItemType::DarkAmmo, 50},     {CPlayerState::EItemType::LightAmmo, 50},
 
-    {CPlayerState::EItemType::DarkVisor},     {CPlayerState::EItemType::GravityBoost},
+    {CPlayerState::EItemType::DarkVisor},        {CPlayerState::EItemType::VioletTranslator},
+    {CPlayerState::EItemType::AmberTranslator},  {CPlayerState::EItemType::EmeraldTranslator},
+    {CPlayerState::EItemType::CobaltTranslator},
 };
 
 static constexpr SItemAmt HundredPercentItems[] = {
@@ -153,6 +157,8 @@ namespace GUI {
       ImGui::SameLine();
       if (ImGui::Button("Any%")) {
         clearItems(playerState);
+        for (auto v : StartingItems)
+          playerState->ReInitializePowerUp(v.item, v.count);
         for (auto v : ILSItems)
           playerState->ReInitializePowerUp(v.item, v.count);
         for (auto v : AnyPercentItems)
