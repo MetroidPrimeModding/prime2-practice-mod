@@ -13,12 +13,21 @@
 
 // clang format loves to just stomp everything here in the least useful possible way
 // clang-format off
-DECLARE_FUNCTION_REPLACEMENT(CMain_DrawDebugMetrics) {
+// DECLARE_FUNCTION_REPLACEMENT(CMain_DrawDebugMetrics) {
+//   static void Callback() {
+//     PracticeMod::GetInstance()->render();
+//     Orig();
+//   }
+// };
+
+// CGraphics::EndScene
+DECLARE_FUNCTION_REPLACEMENT(CGraphics_EndScene) {
   static void Callback() {
     PracticeMod::GetInstance()->render();
     Orig();
   }
 };
+
 
 // CMainFlow::OnMessage
 DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
@@ -108,7 +117,8 @@ DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
 // clang-format on
 
 void InstallHooks() {
-  CMain_DrawDebugMetrics::InstallAtFuncPtr(&CMain::DrawDebugMetrics);
+  // CMain_DrawDebugMetrics::InstallAtFuncPtr(&CMain::DrawDebugMetrics);
+  CGraphics_EndScene::InstallAtFuncPtr(&CGraphics::EndScene);
   CMainFlow_OnMessage::InstallAtFuncPtr(&CMainFlow::OnMessage);
   CPlayer_ProcessInput::InstallAtFuncPtr(&CPlayer::ProcessInput);
   CPauseScreen_ProcessInput::InstallAtFuncPtr(&CPauseScreen::ProcessInput);

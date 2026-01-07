@@ -65,6 +65,9 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Changelog
 
+### 1.1.3
+- Fix nintendont? Seems to work more consistently now
+
 ### 1.1.2
 - Fix warps with player menu open
 - Re-order keys to be cleaner
