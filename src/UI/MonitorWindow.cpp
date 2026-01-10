@@ -23,6 +23,7 @@ namespace GUI {
   void drawPos();
   void drawVelocity();
   void drawRotationalVelocity();
+  void drawJumpState();
   void drawIGT();
   void drawRoomTime();
   // void handleLoadBasedRoomTiming(double current_time);
@@ -51,6 +52,9 @@ namespace GUI {
       }
       if (SETTINGS.OSD_showRotationalVelocity) {
         drawRotationalVelocity();
+      }
+      if (SETTINGS.OSD_showJumpState) {
+        drawJumpState();
       }
       if (SETTINGS.OSD_showFrameTime) {
         drawFrameTime();
@@ -274,6 +278,7 @@ namespace GUI {
       // a
       dl->AddCircleFilled(aButtonCenter, aButtonRadius, p1->DA() ? green : stickGray, 16);
 
+
       // b
       dl->AddCircleFilled(bButtonCenter, bButtonRadius, p1->DB() ? red : stickGray, 16);
 
@@ -307,4 +312,27 @@ namespace GUI {
     ImGui::End();
   }
 
+  const char *nameForJumpstate(CPlayer::EPlayerMovementState jumpState) {
+    switch (jumpState) {
+    case CPlayer::EPlayerMovementState::OnGround:
+      return "OnGround";
+    case CPlayer::EPlayerMovementState::StartJump:
+      return "StartJump";
+    case CPlayer::EPlayerMovementState::InAir:
+      return "In Air";
+    case CPlayer::EPlayerMovementState::Falling:
+      return "Falling";
+    case CPlayer::EPlayerMovementState::FallingMorphed:
+      return "FallingMorphed";
+    default:
+      return "Unknown";
+    }
+  }
+
+  void drawJumpState() {
+    CPlayer *player = g_CStateManager.GetPlayer();
+    if (!player) return;
+    CPlayer::EPlayerMovementState jumpState = *player->getMovementState();
+    ImGui::Text("Jump State: %s", nameForJumpstate(jumpState));
+  }
 } // namespace GUI

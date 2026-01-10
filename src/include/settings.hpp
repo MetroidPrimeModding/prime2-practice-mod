@@ -21,6 +21,8 @@ struct Settings {
   bool OSD_showCurrentRoomTime : 1 {true};
   bool OSD_showPreviousRoomTime : 1 {true};
   bool OSD_showLoads : 1 {DEBUG_TRUE};
+  bool OSD_showJumpState : 1 {false};
+
 
   bool RNG_lockSeed{false};
 };
