@@ -9,6 +9,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 
+#include "ImHelpers.hpp"
 #include "imgui_internal.h"
 #include "prime/CPlayer.hpp"
 #include "prime/CWorld.hpp"
@@ -17,25 +18,15 @@
 
 namespace GUI {
   void drawFrameTime();
-
   void drawMemoryUsage();
-
   void drawInput(CFinalInput *inputs);
-
   void drawPos();
-
   void drawVelocity();
-
   void drawRotationalVelocity();
-
   void drawIGT();
-
   void drawRoomTime();
-
   // void handleLoadBasedRoomTiming(double current_time);
-
   // void drawLoads();
-
   void drawRng();
 
   void drawMonitorWindow(CFinalInput *inputs) {
@@ -43,15 +34,11 @@ namespace GUI {
       return;
     }
     {
-      ImGui::SetNextWindowPos(ImVec2(630, 10), ImGuiCond_None, ImVec2(1, 0));
+      ImGui::SetNextWindowPos(ImVec2(630, 10), ImGuiCond_Once, ImVec2(1, 0));
       ImGui::Begin("Monitor", nullptr,
                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar |
-                       ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus |
-                       ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove |
-                       ImGuiWindowFlags_NoDecoration |
-                       //        ImGuiWindowFlags_NoBackground |
-                       ImGuiFocusedFlags_None // just for conveneint commenting in/out
-      );
+                       ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoFocusOnAppearing |
+                       ImGuiWindowFlags_NoDecoration);
       if (SETTINGS.OSD_showIGT) {
         drawIGT();
       }
@@ -72,11 +59,12 @@ namespace GUI {
         // TODO: drawMemoryUsage();
       }
 
+      ImHelpers::ClampCurrentWindowToScreen();
       ImGui::End();
     }
 
     if (SETTINGS.OSD_showLoads) {
-      //TODO: drawLoads();
+      // TODO: drawLoads();
     }
 
     if (SETTINGS.OSD_showInput) {
@@ -154,7 +142,6 @@ namespace GUI {
     ImGui::PlotLines("", frames, GRAPH_LENGTH, 0, title, 0.f, 32.f, ImVec2(0, 40.0f));
   }
 
-
   u32 last_room = -1;
   double last_time = 0;
   double room_start_time = 0;
@@ -183,8 +170,7 @@ namespace GUI {
         ImGui::Text("P: %02d:%02d:%02d.%03d|%d", hours, minutes, seconds, ms, frames);
       }
       if (SETTINGS.OSD_showCurrentRoomTime) {
-        if (SETTINGS.OSD_showPreviousRoomTime)
-          ImGui::SameLine();
+        if (SETTINGS.OSD_showPreviousRoomTime) ImGui::SameLine();
         int frames = (int)(current_room_time / (1.0 / 60.0));
         int ms = (int)(current_room_time * 1000.0) % 1000;
         int seconds = (int)current_room_time % 60;
@@ -198,14 +184,11 @@ namespace GUI {
   void drawInput(CFinalInput *inputs) {
     CFinalInput *p1 = &inputs[0];
 
-    ImGui::SetNextWindowPos(ImVec2(630, 450), ImGuiCond_None, ImVec2(1, 1));
+    ImGui::SetNextWindowPos(ImVec2(630, 450), ImGuiCond_Once, ImVec2(1, 1));
     ImGui::Begin("Input", nullptr,
                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar |
-                     ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus |
-                     ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove |
-                     ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground |
-                     ImGuiFocusedFlags_None // just for conveneint commenting in/out
-    );
+                     ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoFocusOnAppearing |
+                     ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
 
     ImDrawList *dl = ImGui::GetWindowDrawList();
     ImVec2 p = ImGui::GetCursorScreenPos();
@@ -320,6 +303,7 @@ namespace GUI {
     }
 
     ImGui::Dummy(ImVec2(130, 80));
+    ImHelpers::ClampCurrentWindowToScreen();
     ImGui::End();
   }
 

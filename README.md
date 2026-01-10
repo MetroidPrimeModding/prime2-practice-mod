@@ -65,6 +65,10 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Changelog
 
+### 1.2.0
+- Add ability to move windows around (hold "X" and use c-stick to move)
+- Hold L/R to increase/decrease how quickly numbers change in the edit position menu
+
 ### 1.1.3
 - Fix nintendont? Seems to work more consistently now
 
