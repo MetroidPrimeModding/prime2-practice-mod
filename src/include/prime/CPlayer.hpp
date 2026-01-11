@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CFinalInput.hpp"
 #include "prime/CPhysicsActor.hpp"
 #include "prime/CStateManager.hpp"
 

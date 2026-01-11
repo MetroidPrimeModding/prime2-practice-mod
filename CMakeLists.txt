@@ -38,6 +38,7 @@ set(SOURCE_FILES
         src/include/dvd.h
         src/include/types.h
         src/include/os.h
+        src/include/pad.h
         src/include/utils.hpp
         src/include/MathyTypes.hpp
 

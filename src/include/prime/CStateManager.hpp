@@ -1,7 +1,9 @@
 #pragma once
 
+#include "CGameState.hpp"
 #include "CGraphics.hpp"
 #include "CObjectList.hpp"
+#include "CPlayer.hpp"
 #include "CScriptSpawnPoint.hpp"
 #include "GetField.hpp"
 #include "PrimeAPI.h"
@@ -44,7 +46,18 @@ public:
   void Update(float dt);
 
   inline CFinalInput *GetFinalInput() const { return GetField<CFinalInput>(this, 0x153C); }
-  inline CPlayer *GetPlayer() const { return *GetField<CPlayer *>(this, 0x14FC); }
+  inline CPlayer *GetPlayer(int index) {
+    CPlayer ** players = *GetField<CPlayer *[4]>(this, 0x14FC);
+    if (!players) return nullptr;
+    CPlayer *res = players[index % 4];
+    if (!res) return nullptr;
+    if (*res->getMovementState() > CPlayer::EPlayerMovementState::FallingMorphed) {
+      // it's not initialized yet!
+      return nullptr;
+    }
+    return res;
+  }
+  inline CPlayer *GetPlayer() { return GetPlayer(0); }
   // inline EInitPhase GetInitPhase() const { return *GetField<EInitPhase>(this, 0xB3C); }
   // inline CRandom16 *GetRandom() const { return GetField<CRandom16>(this, 0x8FC); }
   // inline CRandom16 *GetActiveRandom() const { return *GetField<CRandom16 *>(this, 0x900); }

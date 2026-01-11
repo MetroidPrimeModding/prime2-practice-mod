@@ -6,7 +6,7 @@
 #include <imgui_internal.h>
 
 GXTexObj imguiFontTexture;
-IMGuiGXTexture imuiFontTextureImguiTexture = {};
+IMGuiGXTexture imuiFontTextureImguiTexture{};
 
 const ImWchar EMPTY_FONT_RANGE[] = {
     0 // end
@@ -38,15 +38,25 @@ void ImGuiEngine::ImGui_Render_GX(const ImDrawData *drawData) {
 
   CGraphics::DisableAllLights();
   CGX::SetZMode(false, GxCompare_NEVER, false);
-  //  GXSetBlendMode(
-  //      GX_BM_BLEND,
-  //      GX_BL_SRCALPHA, GX_BL_INVSRCALPHA,
-  //      GX_LO_NOOP
-  //  );
   CGX::SetBlendMode(GxBlendMode_BLEND, GxBlendFactor_SRCALPHA, GxBlendFactor_INVSRCALPHA, GxLogicOp_OR);
-  //  CGraphics::SetAlphaCompare(ERglAlphaFunc_GREATER, 0, ERglAlphaOp_OR, ERglAlphaFunc_GREATER, 0);
+  // CGraphics::SetAlphaCompare(ERglAlphaFunc_GREATER, 0, ERglAlphaOp_OR, ERglAlphaFunc_GREATER, 0);
   CGraphics::SetCullMode(ERglCullMode_None);
-  CTexture::InvalidateTexmap(GX_TEXMAP0);
+
+  //Set up vert format
+  CGraphics::SetDefaultVtxAttrFmt();
+  GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XY, GX_F32, 0);
+  GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
+  GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
+  static _GXVtxDescList desc[4] = {
+    {.attr=GX_VA_POS, .type=GX_INDEX16},
+    {.attr=GX_VA_CLR0, .type=GX_INDEX16},
+    {.attr=GX_VA_TEX0, .type=GX_INDEX16},
+    {.attr=GX_VA_NULL, .type=GX_NONE}
+  };
+  CGX::SetVtxDescv(desc);
+  CGraphics::SetTevStates(6); // tex | color
+  CGX::SetNumTexGens(1);
+  CGX::SetNumChans(1);
 
   CGX::SetNumTevStages(1);
   CGX::SetTevOrder(
@@ -78,19 +88,6 @@ void ImGuiEngine::ImGui_Render_GX(const ImDrawData *drawData) {
   vp.mtx[2][2] = cos(theta);
   CGraphics::SetModelMatrix(vp);
 
-  //Set up vert format
-  GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XY, GX_F32, 0);
-  GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
-  GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
-  static _GXVtxDescList desc[4] = {
-      {.attr=GX_VA_POS, .type=GX_INDEX16},
-      {.attr=GX_VA_CLR0, .type=GX_INDEX16},
-      {.attr=GX_VA_TEX0, .type=GX_INDEX16},
-      {.attr=GX_VA_NULL, .type=GX_NONE}
-  };
-  CGX::SetVtxDescv(desc);
-  CGraphics::SetTevStates(6); // tex | color
-  CGX::SetNumTexGens(1); // Apparently required
   WGPipe *const pipe = (WGPipe *) 0xCC008000;
   for (int cmdListIdx = 0; cmdListIdx < drawData->CmdListsCount; cmdListIdx++) {
     const ImDrawList *cmdList = drawData->CmdLists[cmdListIdx];
@@ -109,6 +106,7 @@ void ImGuiEngine::ImGui_Render_GX(const ImDrawData *drawData) {
       if (tex->tlut) {
         GXLoadTlut(tex->tlut, tex->tlut_name);
       }
+      CTexture::InvalidateTexmap(GX_TEXMAP0);
 
       // (x0, y0, x1, y1) but also need to flip the two y coords
       int x0 = (int) cmd->ClipRect.x;
@@ -323,8 +321,6 @@ void ImGuiEngine::ImGui_Init() {
   }
   font->ContainerAtlas = io.Fonts;
   font->EllipsisChar = -1;
-  imuiFontTextureImguiTexture.obj = &imguiFontTexture;
-  io.Fonts->SetTexID(&imuiFontTextureImguiTexture);
   // send it off to GX
   GXInitTexObj(&imguiFontTexture, (void *) FontAtlas::ATLAS_DATA,
                FontAtlas::ATLAS_W, FontAtlas::ATLAS_H,
@@ -340,6 +336,9 @@ void ImGuiEngine::ImGui_Init() {
                   GX_DISABLE,
                   GX_ANISO_1
   );
+  imuiFontTextureImguiTexture.obj = &imguiFontTexture;
+  imuiFontTextureImguiTexture.tlut = nullptr;
+  io.Fonts->SetTexID(&imuiFontTextureImguiTexture);
 }
 
 void ImGuiEngine::ImGui_Init_Style() {

@@ -32,10 +32,10 @@ DECLARE_FUNCTION_REPLACEMENT(CGraphics_EndScene) {
 // CMainFlow::OnMessage
 DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
   static CIOWin::EMessageReturn Callback(CMainFlow *thiz, const CArchitectureMessage &msg, CArchitectureQueue &queue) {
-    CIOWin::EMessageReturn res = Orig(thiz, msg, queue);
     if (msg.x4_type == EArchMsgType_UserInput) {
       CArchMsgParmUserInput *status = (CArchMsgParmUserInput *)(msg.GetParm());
       CFinalInput *input = status->GetInput();
+
       // The mod 4 is just for safety
       memcpy(&PracticeMod::GetInstance()->inputs[input->ControllerIdx() % 4],
              input,
@@ -44,6 +44,8 @@ DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
         PracticeMod::GetInstance()->HandleInputs();
       }
     }
+
+    CIOWin::EMessageReturn res = Orig(thiz, msg, queue);
     return res;
   }
 };
@@ -114,6 +116,19 @@ DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
 //   }
 // };
 
+
+// DECLARE_FUNCTION_REPLACEMENT(Repl_PadRead) {
+//   static u32 Callback(PADStatus *status) {
+//     u32 res = Orig(status);
+//     static bool spam = false;
+//     if (spam) {
+//       status->button |= PAD_BUTTON_A;
+//     }
+//     spam = !spam;
+//     return res;
+//   }
+// };
+
 // clang-format on
 
 void InstallHooks() {
@@ -125,4 +140,5 @@ void InstallHooks() {
   CRandom16_Next::InstallAtFuncPtr(&CRandom16::Next);
   CMoviePlayer_constructor::InstallAtFuncPtr(&CMoviePlayer::CMoviePlayerConstructor);
   // CStateManger_SpawnPlayerAtPoint::InstallAtFuncPtr(&CStateManager::SpawnPlayerAtPoint);
+  // Repl_PadRead::InstallAtFuncPtr(&PAD_Read);
 }
