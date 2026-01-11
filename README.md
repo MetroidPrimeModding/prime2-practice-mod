@@ -65,6 +65,10 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Changelog
 
+### 1.2.1
+- Possibly improve nintendont compatibility?
+- Improve handling of exponential-sized speeds/rotations
+
 ### 1.2.0
 - Add support for jump state in monitor window
 - Add ability to move windows around (hold "X" and use c-stick to move)
