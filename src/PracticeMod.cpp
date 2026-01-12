@@ -7,6 +7,7 @@
 #include "UI/SettingsMenu.hpp"
 #include "UI/WarpMenu.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "os.h"
 #include "prime/CGameState.hpp"
 #include "prime/CMain.hpp"
@@ -47,25 +48,27 @@ void PracticeMod::handlePosLoadIfNeeded(CPlayer *player) {
 void PracticeMod::HandleInputs() {
   if (this->pauseScreenActive && this->menuActive) {
     ImGuiIO *io = &ImGui::GetIO();
-    io->NavInputs[ImGuiNavInput_Activate] = inputs[0].DA();
-    io->NavInputs[ImGuiNavInput_Cancel] = inputs[0].DB();
-    io->NavInputs[ImGuiNavInput_Menu] = inputs[0].DX();
-    io->NavInputs[ImGuiNavInput_Input] = inputs[0].DY();
-    io->NavInputs[ImGuiNavInput_FocusNext] = inputs[0].DRTrigger();
-    io->NavInputs[ImGuiNavInput_FocusPrev] = inputs[0].DLTrigger();
-    io->NavInputs[ImGuiNavInput_TweakFast] = inputs[0].DRTrigger();
-    io->NavInputs[ImGuiNavInput_TweakSlow] = inputs[0].DLTrigger();
+    ImGui::GetCurrentContext()->NavInputSource = ImGuiInputSource_Gamepad;
+    io->BackendFlags |= ImGuiBackendFlags_HasGamepad;
+    io->AddKeyEvent(ImGuiKey_GamepadFaceDown, inputs[0].DA());
+    io->AddKeyEvent(ImGuiKey_GamepadFaceRight, inputs[0].DB());
+    io->AddKeyEvent(ImGuiKey_GamepadFaceLeft, inputs[0].DX());
+    io->AddKeyEvent(ImGuiKey_GamepadFaceUp, inputs[0].DY());
+    io->AddKeyEvent(ImGuiKey_GamepadR1, inputs[0].DRTrigger());
+    io->AddKeyEvent(ImGuiKey_GamepadL1, inputs[0].DLTrigger());
+    io->AddKeyAnalogEvent(ImGuiKey_GamepadL2, inputs[0].ALTrigger() > 0.0, inputs[0].ALTrigger());
+    io->AddKeyAnalogEvent(ImGuiKey_GamepadR2, inputs[0].ARTrigger() > 0.0, inputs[0].ARTrigger());
 
     // dpad
-    io->NavInputs[ImGuiNavInput_DpadLeft] = inputs[0].DDPLeft() || inputs[0].DLALeft();
-    io->NavInputs[ImGuiNavInput_DpadRight] = inputs[0].DDPRight() || inputs[0].DLARight();
-    io->NavInputs[ImGuiNavInput_DpadUp] = inputs[0].DDPUp() || inputs[0].DLAUp();
-    io->NavInputs[ImGuiNavInput_DpadDown] = inputs[0].DDPDown() || inputs[0].DLADown();
-    // analog
-    io->NavInputs[ImGuiNavInput_LStickLeft] = inputs[0].ARALeft();
-    io->NavInputs[ImGuiNavInput_LStickRight] = inputs[0].ARARight();
-    io->NavInputs[ImGuiNavInput_LStickUp] = inputs[0].ARAUp();
-    io->NavInputs[ImGuiNavInput_LStickDown] = inputs[0].ARADown();
+    io->AddKeyEvent(ImGuiKey_GamepadDpadLeft, inputs[0].DDPLeft() || inputs[0].DLALeft());
+    io->AddKeyEvent(ImGuiKey_GamepadDpadRight, inputs[0].DDPRight() || inputs[0].DLARight());
+    io->AddKeyEvent(ImGuiKey_GamepadDpadUp, inputs[0].DDPUp() || inputs[0].DLAUp());
+    io->AddKeyEvent(ImGuiKey_GamepadDpadDown, inputs[0].DDPDown() || inputs[0].DLADown());
+    // analog move window
+    io->AddKeyAnalogEvent(ImGuiKey_GamepadLStickLeft, inputs[0].ALALeft() > 0.0, inputs[0].ALALeft());
+    io->AddKeyAnalogEvent(ImGuiKey_GamepadLStickRight, inputs[0].ALARight() > 0.0, inputs[0].ALARight());
+    io->AddKeyAnalogEvent(ImGuiKey_GamepadLStickUp, inputs[0].ALAUp() > 0.0, inputs[0].ALAUp());
+    io->AddKeyAnalogEvent(ImGuiKey_GamepadLStickDown, inputs[0].ALADown() > 0.0, inputs[0].ALADown());
 
   } else if (!this->pauseScreenActive) {
     //  warp hotkeys

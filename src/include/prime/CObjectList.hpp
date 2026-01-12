@@ -19,6 +19,7 @@ public:
   u32 type;
   u16 first;
   u16 count;
+  u32 unk1;
 
   inline CEntity *GetObjectById(TUniqueId uid) {
     if (uid == -1)

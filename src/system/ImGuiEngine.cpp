@@ -252,6 +252,7 @@ void ImGuiEngine::ImGui_Init() {
   atlas->TexUvWhitePixel = FontAtlas::WhitePixel;
   atlas->PackIdLines = FontAtlas::PackIdMouseCursors;
   atlas->PackIdMouseCursors = 0;
+  atlas->TexReady = true;
   for (int i = 0; i < IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 1; i++) {
     auto uvline = &FontAtlas::TexUvLines[i];
     atlas->TexUvLines[i] = ImVec4{
@@ -274,6 +275,7 @@ void ImGuiEngine::ImGui_Init() {
   io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 
 //  // setup font
+  ImFont *font;
   {
     ImFontConfig fontConfig{};
     fontConfig.SizePixels = 10;
@@ -282,7 +284,7 @@ void ImGuiEngine::ImGui_Init() {
     fontConfig.PixelSnapH = true;
     fontConfig.GlyphRanges = io.Fonts->GetGlyphRangesNone();
     // gen font and font data
-    io.Fonts->AddFontBlank(&fontConfig);
+    font = io.Fonts->AddFontBlank(&fontConfig);
   }
   for (auto &v : FontAtlas::CustomRects) {
     ImFontAtlasCustomRect rect{};
@@ -292,7 +294,6 @@ void ImGuiEngine::ImGui_Init() {
     rect.Width = v.x;
     atlas->CustomRects.push_back(rect);
   }
-  ImFont *font = io.Fonts->Fonts[0];
   for (float f : FontAtlas::INDEX_ADVANCE_X) {
     font->IndexAdvanceX.push_back(f);
   }
@@ -316,8 +317,8 @@ void ImGuiEngine::ImGui_Init() {
   font->Ascent = FontAtlas::ASCENT;
   font->Descent = FontAtlas::DESCENT;
   font->MetricsTotalSurface = FontAtlas::MetricsTotalSurface;
-  for (int i = 0; i < sizeof(FontAtlas::Used4kPagesMap); i++) {
-    font->Used4kPagesMap[i] = FontAtlas::Used4kPagesMap[i];
+  for (int i = 0; i < sizeof(FontAtlas::Used8kPagesMap); i++) {
+    font->Used8kPagesMap[i] = FontAtlas::Used8kPagesMap[i];
   }
   font->ContainerAtlas = io.Fonts;
   font->EllipsisChar = -1;
@@ -339,6 +340,10 @@ void ImGuiEngine::ImGui_Init() {
   imuiFontTextureImguiTexture.obj = &imguiFontTexture;
   imuiFontTextureImguiTexture.tlut = nullptr;
   io.Fonts->SetTexID(&imuiFontTextureImguiTexture);
+  io.Fonts->TexReady = true;
+
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_NoMouse ;
+  io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 }
 
 void ImGuiEngine::ImGui_Init_Style() {

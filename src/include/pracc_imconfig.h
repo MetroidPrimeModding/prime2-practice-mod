@@ -28,6 +28,12 @@
 #define IM_ASSERT(_EXPR) ((void)(_EXPR)) // Disable asserts
 #endif
 
+// we just use a void pointer for this for now. Could be our specific pointer in the future
+#define ImTextureID void*
+
+// Need this to be the same as it was before
+#define IM_DRAWLIST_TEX_LINES_WIDTH_MAX (63)
+
 //---- Define attributes of all API symbols declarations, e.g. for DLL under Windows
 // Using Dear ImGui via a shared library is not recommended, because of function call overhead and because we don't
 // guarantee backward nor forward ABI compatibility. DLL users: heaps and globals are not shared across DLL boundaries!
@@ -47,7 +53,7 @@
 // empty.
 #define IMGUI_DISABLE_DEMO_WINDOWS // Disable demo windows: ShowDemoWindow()/ShowStyleEditor() will be empty. Not
                                    // recommended.
-#define IMGUI_DISABLE_METRICS_WINDOW                      // Disable metrics/debugger window: ShowMetricsWindow()
+#define IMGUI_DISABLE_DEBUG_TOOLS
 // will be empty.
 
 //---- Don't implement some functions to reduce linkage requirements.
@@ -71,6 +77,9 @@
 #define IMGUI_DISABLE_DEFAULT_ALLOCATORS // Don't implement default allocators calling malloc()/free() to avoid linking
                                          // with them. You will need to call ImGui::SetAllocatorFunctions().
 
+#define IMGUI_DISABLE_DEFAULT_SHELL_FUNCTIONS
+#define IMGUI_DISABLE_SSE
+#define IMGUI_DISABLE_DEFAULT_FONT
 //---- Include imgui_user.h at the end of imgui.h as a convenience
 // #define IMGUI_INCLUDE_IMGUI_USER_H
 

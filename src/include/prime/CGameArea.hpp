@@ -61,10 +61,10 @@ public:
     CAssetId AssetId() { return *GetField<CAssetId>(this, 0x54); };
   inline u32 areaID() { return *GetField<u32>(this, 0x88); };
   inline u32 areaIDx() { return *GetField<u32>(this, 0x4); }; // this is like, the index in the array
-  inline rstl::vector<u16> *attachedAreaIndices() { return GetField<rstl::vector<u16>>(this, 0x90); };
-  inline rstl::vector<Dock> *docks() { return GetField<rstl::vector<Dock>>(this, 0xD0); };
-  inline CPostConstructed *postConstructed() { return *GetField<CPostConstructed *>(this, 0x12C); };
-  inline EChain curChain() { return *GetField<EChain>(this, 0x138); };
+  // inline rstl::vector<u16> *attachedAreaIndices() { return GetField<rstl::vector<u16>>(this, 0x5c); };
+  // inline rstl::vector<Dock> *docks() { return GetField<rstl::vector<Dock>>(this, 0x9c); };
+  // inline CPostConstructed *postConstructed() { return *GetField<CPostConstructed *>(this, 0x104); };
+  // inline EChain curChain() { return *GetField<EChain>(this, 0x100); };
   void SetOcclusionState(EOcclusionState state);
 };
 

@@ -40,6 +40,8 @@ namespace GUI {
                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar |
                        ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoFocusOnAppearing |
                        ImGuiWindowFlags_NoDecoration);
+
+      ImGui::Text("input: %d", ImGui::GetCurrentContext()->NavInputSource);
       if (SETTINGS.OSD_showIGT) {
         drawIGT();
       }

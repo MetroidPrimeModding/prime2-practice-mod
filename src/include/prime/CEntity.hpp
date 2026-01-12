@@ -116,5 +116,5 @@ public:
 
   inline u32 getEditorID() { return *GetField<u32>(this, 0xC); }
 
-  rstl::vector_type_2<SConnection> *getConnections() { return GetField<rstl::vector_type_2<SConnection>>(this, 0x20); }
+  // rstl::vector_type_2<SConnection> *getConnections() { return GetField<rstl::vector_type_2<SConnection>>(this, 0x20); }
 };

@@ -4,5 +4,5 @@
 
 class CGameGlobalObjects {
 public:
-  inline CGameState *getGameState() { return *GetField<CGameState *>(this, 0x134); }
+  // inline CGameState *getGameState() { return *GetField<CGameState *>(this, 0x134); }
 };

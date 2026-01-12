@@ -135,8 +135,8 @@ constexpr float ASCENT = 8;
 constexpr float DESCENT = -3;
 constexpr float MetricsTotalSurface = 3767;
 const ImVec2 WhitePixel{0.511719,0.00390625};
-constexpr unsigned char Used4kPagesMap[(0xFFFF+1)/4096/8] = {
-1,0,
+constexpr unsigned char Used8kPagesMap[(0xFFFF+1)/8192/8] = {
+1,
 };
 const int PackedIdLines = 1;
 const int PackIdMouseCursors = 0;
