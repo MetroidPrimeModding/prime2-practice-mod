@@ -65,7 +65,7 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Changelog
 
-### 1.2.1
+### 1.2.1/1.2.2
 - Possibly improve nintendont compatibility?
 - Improve handling of exponential-sized speeds/rotations
 

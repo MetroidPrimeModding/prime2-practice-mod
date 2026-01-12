@@ -9,10 +9,6 @@ class PracticeMod {
 public:
   static PracticeMod *GetInstance();
   static void ClearInstance();
-  bool menuActive:1{false};
-  bool pauseScreenActive:1{false};
-  bool mapActive:1{false};
-  bool wasRenderingLastFrame:1{false};
   CFinalInput inputs[4];
 
   PracticeMod();
@@ -29,4 +25,10 @@ private:
   float hotkeyInputTimeout = 0;
   int upPresses = 0;
   int downPresses = 0;
+
+public:
+  bool menuActive{false};
+  bool pauseScreenActive{false};
+  bool mapActive{false};
+  bool wasRenderingLastFrame{false};
 };
