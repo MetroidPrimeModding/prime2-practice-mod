@@ -37,7 +37,7 @@ def patch_dol(mod_path: str, unpatched_dol_bytes: bytes) -> bytearray:
             print("Segment:")
             for section in elf_file.iter_sections():
                 if segment.section_in_segment(section):
-                    print(f"    - {section.name} @ 0x{section['sh_addr']:08x} - 0x{(section['sh_addr'] + section['sh_size']):08x}")
+                    print(f"    - {section.name} @ 0x{section['sh_addr']:08x} - 0x{(section['sh_addr'] + section['sh_size']):08x} ({section['sh_size']} bytes)")
 
             data = segment.data()
             if len(data) == 0:

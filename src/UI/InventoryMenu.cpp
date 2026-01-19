@@ -69,7 +69,7 @@ static constexpr SItemAmt ILSItems[] = {
 };
 
 static constexpr SItemAmt AnyPercentItems[] = {
-    {CPlayerState::EItemType::EnergyTank, 2},    {CPlayerState::EItemType::Missile, 25},
+    {CPlayerState::EItemType::EnergyTank, 4},    {CPlayerState::EItemType::Missile, 35},
     {CPlayerState::EItemType::SuperMissile},     {CPlayerState::EItemType::CannonBall},
 
     {CPlayerState::EItemType::MorphBall},        {CPlayerState::EItemType::MorphBallBomb},
@@ -82,7 +82,6 @@ static constexpr SItemAmt AnyPercentItems[] = {
     {CPlayerState::EItemType::DarkAmmo, 50},     {CPlayerState::EItemType::LightAmmo, 50},
 
     {CPlayerState::EItemType::DarkVisor},        {CPlayerState::EItemType::VioletTranslator},
-    {CPlayerState::EItemType::AmberTranslator},  {CPlayerState::EItemType::EmeraldTranslator},
     {CPlayerState::EItemType::CobaltTranslator},
 };
 
