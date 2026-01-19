@@ -3,8 +3,7 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## How to install (Windows)
 - Get an Echoes .iso (i.e. using a hacked wii and cleanrip)
-- Copy an Echoes iso to 'prime2.iso' in this directory
-- Run `patch.bat`
+- Run `patch.bat` and select your .iso
 
 ## How to install (Non-windows)
 - Make sure you have python3 installed (it should come with most linux distros/macOS)
