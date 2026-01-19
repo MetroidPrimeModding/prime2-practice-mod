@@ -105,7 +105,7 @@ static constexpr SItemAmt HundredPercentItems[] = {
     {CPlayerState::EItemType::DarkTorvusKey1},   {CPlayerState::EItemType::DarkTorvusKey2},
     {CPlayerState::EItemType::DarkTorvusKey3},   {CPlayerState::EItemType::IngHiveKey1},
     {CPlayerState::EItemType::IngHiveKey2},      {CPlayerState::EItemType::IngHiveKey3},
-    {CPlayerState::EItemType::EnergyTank, 14},   {CPlayerState::EItemType::PowerBomb, 8},
+    {CPlayerState::EItemType::EnergyTank, 14},   {CPlayerState::EItemType::PowerBomb, 10},
     {CPlayerState::EItemType::Missile, 255},     {CPlayerState::EItemType::DarkAmmo, 250},
     {CPlayerState::EItemType::LightAmmo, 250},   {CPlayerState::EItemType::VioletTranslator},
     {CPlayerState::EItemType::AmberTranslator},  {CPlayerState::EItemType::EmeraldTranslator},
