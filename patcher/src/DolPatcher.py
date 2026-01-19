@@ -46,7 +46,7 @@ def patch_dol(mod_path: str, unpatched_dol_bytes: bytes) -> bytearray:
             addr = segment.header['p_paddr']
 
             segment_start = len(out_bytes)
-            out_bytes.extend(data)\
+            out_bytes.extend(data)
 
 
             # if segment.header['p_flags'] & 1 == 1 and False:
