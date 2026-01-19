@@ -56,3 +56,16 @@ class DolHeader:
         dest.write_u32(0xD8, self.bss_addr)
         dest.write_u32(0xDC, self.bss_size)
         dest.write_u32(0xE0, self.entry)
+
+    def print(self):
+        print("DOL Header:")
+        for i, seg in enumerate(self.text):
+            if seg.size == 0:
+                continue
+            print(f" Text Segment {i}: Offset: 0x{seg.offset:08X}, Loading: 0x{seg.loading:08X}, Size: 0x{seg.size:08X}, End: 0x{(seg.loading + seg.size):08X}")
+        for i, seg in enumerate(self.data):
+            if seg.size == 0:
+                continue
+            print(f" Data Segment {i}: Offset: 0x{seg.offset:08X}, Loading: 0x{seg.loading:08X}, Size: 0x{seg.size:08X}, End: 0x{(seg.loading + seg.size):08X}")
+        print(f" BSS Address: 0x{self.bss_addr:08X}, BSS Size: 0x{self.bss_size:08X}, end: 0x{(self.bss_addr + self.bss_size):08X}")
+        print(f" Entry Point: 0x{self.entry:08X}")

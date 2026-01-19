@@ -78,6 +78,8 @@ namespace GUI {
         GX_DISABLE,
         GX_ANISO_1
     );
+    DCFlushRange(&gxTexObj, sizeof(GXTexObj));
+    DCFlushRange(&gxTlutObj, sizeof(GXTlutObj));
     imGuiTexture.obj = &gxTexObj;
     imGuiTexture.tlut = &gxTlutObj;
     imGuiTexture.tlut_name = GX_TLUT15;
@@ -215,6 +217,8 @@ namespace GUI {
     // TODO: better error correction code encoding here?
 
     convertTextureToBlocks(tempData);
+
+    DCFlushRange(textureData, tex_size);
     delete[] tempData;
   }
 

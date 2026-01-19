@@ -8,6 +8,8 @@ from src.Dol import DolHeader
 
 def patch_dol(mod_path: str, unpatched_dol_bytes: bytes) -> bytearray:
     header = DolHeader.parse(DataReader(unpatched_dol_bytes))
+    header.print()
+
     out_bytes = bytearray()
     out_bytes.extend(unpatched_dol_bytes)
 
@@ -32,11 +34,19 @@ def patch_dol(mod_path: str, unpatched_dol_bytes: bytes) -> bytearray:
         entry_addr = elf_file.header['e_entry']
 
         for segment in elf_file.iter_segments():
+            print("Segment:")
+            for section in elf_file.iter_sections():
+                if segment.section_in_segment(section):
+                    print(f"    - {section.name} @ 0x{section['sh_addr']:08x} - 0x{(section['sh_addr'] + section['sh_size']):08x}")
+
             data = segment.data()
+            if len(data) == 0:
+                print("No data, skipping")
+                continue
             addr = segment.header['p_paddr']
 
             segment_start = len(out_bytes)
-            out_bytes.extend(data)
+            out_bytes.extend(data)\
 
 
             # if segment.header['p_flags'] & 1 == 1 and False:
@@ -93,9 +103,12 @@ def patch_dol(mod_path: str, unpatched_dol_bytes: bytes) -> bytearray:
         op = 0x4800_0000
         return op | rel
     # Ok now patch the areanalo calls
-    arenahi_upper = ((link_end >> 16) & 0xFFFF) + 1 # Not sure if this 1 is necessary, but it's probably not hurting much
+    arenahi_upper = ((link_end >> 16) & 0xFFFF)
+    areenalo_lower = link_end & 0xFFFF
     patch_addr_32(patch_arena_lo_1, lambda x: (x & 0xFFFF_0000) | arenahi_upper)
+    patch_addr_32(patch_arena_lo_1 + 4, lambda x: (x & 0xFFFF_0000) | areenalo_lower)
     patch_addr_32(patch_arena_lo_2, lambda x: (x & 0xFFFF_0000) | arenahi_upper)
+    patch_addr_32(patch_arena_lo_2 + 4, lambda x: (x & 0xFFFF_0000) | areenalo_lower)
     patch_addr_32(hook_addr, lambda x: b_rel24(hook_addr, entry_addr))
     patch_addr_32(patch_earlyboot_memset, lambda x: b_rel24(patch_earlyboot_memset, patch_earlyboot_memset_addr))
 
