@@ -6,6 +6,7 @@ from src.DataReader import DataReader
 from src.DataWriter import DataWriter
 from src.GCDisc import GCDiscHeader, FST, FSTEntry
 from src.DolPatcher import patch_dol
+from src.Dol import DolHeader
 
 import hashlib
 
@@ -86,8 +87,11 @@ def patch_iso_file(inp_path, out_path, mod_path, ignore_hash=False):
 
     # Ok, find and extract the dol
     print("Extracting DOL")
-    dol_fst_entry = fst.find_offset(header.dol_offset)
-    unpatched_dol_bytes = inp_reader_root.with_offset(dol_fst_entry.offset).read_bytes(0, dol_fst_entry.length)
+    # we need to read the header to find out the length of the dol to extract it
+    dol_header_bytes = inp_reader_root.with_offset(header.dol_offset).read_bytes(0, 0x100)
+    dol_header = DolHeader.parse(DataReader(dol_header_bytes))
+    dol_length = dol_header.size_of_dol()
+    unpatched_dol_bytes = inp_reader_root.with_offset(header.dol_offset).read_bytes(0, dol_length)
 
     # Write it to disk
     # TODO: just do this all in memory

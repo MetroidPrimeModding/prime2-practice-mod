@@ -57,6 +57,14 @@ class DolHeader:
         dest.write_u32(0xDC, self.bss_size)
         dest.write_u32(0xE0, self.entry)
 
+    def size_of_dol(self):
+        max_end = 0
+        for seg in self.text + self.data:
+            end = seg.offset + seg.size
+            if end > max_end:
+                max_end = end
+        return max_end
+
     def print(self):
         print("DOL Header:")
         for i, seg in enumerate(self.text):

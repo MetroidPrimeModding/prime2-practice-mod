@@ -83,11 +83,12 @@ class FSTEntry:
     offset: int = None
     length: int = None
 
-    def print(self, depth=0):
-        print("\t" * depth + f"{self.name} {self.offset} {self.length}")
+    def print(self, parents=[]):
+        # print("\t" * depth + f"{self.name} {(self.offset or 0):08x} {self.length}")
+        print(f"{'/'.join(parents + [self.name])} {(self.offset or 0):08X} {self.length}")
         if self.children:
             for child in self.children:
-                child.print(depth + 1)
+                child.print(parents + [self.name])
 
     def get_ranges(self):
         ranges = []
@@ -114,11 +115,14 @@ class FSTEntry:
 
     def find_offset(self, offset: int):
         if self.directory:
+            print("Searching in: " + self.name)
             for child in self.children:
                 found = child.find_offset(offset)
                 if found:
                     return found
+            return None
         else:
+            print(f"Checking file: {self.name} @ {self.offset:08X}-{(self.offset + self.length):08X} for offset {offset:08X}")
             if self.offset == offset:
                 return self
             else:
@@ -196,18 +200,26 @@ class FST:
             children=[]
         )
         entries = [root_entry]
-        current_directory = root_entry
+        directory_stack = [root_entry]
+        next_dir_offset = None
         for entry_data in entry_datas:
+            offset = len(entries)
+            if offset == next_dir_offset:
+                directory_stack.pop()
+                next_dir_offset = directory_stack[-1].length
+
             if entry_data.directory:
                 entry = FSTEntry(
                     directory=True,
                     name=string_table.read_string(entry_data.filename),
-                    children=[]
+                    children=[],
+                    length=entry_data.length
                 )
                 entries.append(entry)
-                parent = entries[entry_data.offset]
+                parent = directory_stack[-1]
+                directory_stack.append(entry)
+                next_dir_offset = entry_data.length
                 parent.children.append(entry)
-                current_directory = entry
             else:
                 entry = FSTEntry(
                     directory=False,
@@ -216,7 +228,8 @@ class FST:
                     length=entry_data.length
                 )
                 entries.append(entry)
-                current_directory.children.append(entry)
+                parent = directory_stack[-1]
+                parent.children.append(entry)
         return FST(root=root_entry)
 
     def write(self, dest: DataWriter):
