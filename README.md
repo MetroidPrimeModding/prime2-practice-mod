@@ -64,6 +64,11 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Changelog
 
+### 1.2.4
+- Fix 100% to have 10 pbs
+- Fix for cannonball in inventory editor
+- Patcher now works on more discs (notably, ones repacked with NOD)
+
 ### 1.2.3
 - Windows patch script will now prompt for iso location
 - Attempt more improvements at compatibility

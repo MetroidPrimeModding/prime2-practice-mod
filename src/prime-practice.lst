@@ -96,3 +96,4 @@
 0x80319d74 _ZN12CMoviePlayer23CMoviePlayerConstructorEPcdii
 0x80040b18 _ZN13CStateManager18SpawnPlayerAtPointEP17CScriptSpawnPointi
 0x8037748c PAD_Read
+0x80085514 _ZNK12CPlayerState13GetItemAmountENS_9EItemTypeE

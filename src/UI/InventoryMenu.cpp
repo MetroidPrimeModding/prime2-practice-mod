@@ -228,7 +228,7 @@ namespace GUI {
     u32 maxValue = CPlayerState::GetPowerUpMaxValue(itemType);
     const char *name = ItemTypeToName(itemType);
     if (maxValue == 1) {
-      bool enabled = playerState->GetItemCapacity(itemType) == 1;
+      bool enabled = playerState->GetItemCapacity(itemType) == 1 && playerState->GetItemAmount(itemType) == 1;
       if (ImGui::Checkbox(name, &enabled)) {
         if (enabled) {
           playerState->ReInitializePowerUp(itemType, 1);
