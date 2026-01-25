@@ -10,6 +10,8 @@ extern "C" {
 __attribute__((visibility("default"))) extern void _prolog();
 [[maybe_unused]] __attribute__((visibility("default"))) extern void _earlyboot_memset(void *dst, char val, u32 size);
 #pragma clang attribute pop
+void *memcpy(void *dest, const void *src, size_t count);
+}
 
 struct ForceStaticInit {
   ForceStaticInit() {
