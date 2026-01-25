@@ -83,6 +83,15 @@ static constexpr SItemAmt AnyPercentItems[] = {
 
     {CPlayerState::EItemType::DarkVisor},        {CPlayerState::EItemType::VioletTranslator},
     {CPlayerState::EItemType::CobaltTranslator},
+
+  {CPlayerState::EItemType::SkyTempleKey1},    {CPlayerState::EItemType::SkyTempleKey2},
+  {CPlayerState::EItemType::SkyTempleKey3}, {CPlayerState::EItemType::SkyTempleKey4},
+  {CPlayerState::EItemType::SkyTempleKey5}, {CPlayerState::EItemType::SkyTempleKey6},
+  {CPlayerState::EItemType::SkyTempleKey7}, {CPlayerState::EItemType::SkyTempleKey8},
+  {CPlayerState::EItemType::SkyTempleKey9},
+
+  {CPlayerState::EItemType::DarkTorvusKey1},   {CPlayerState::EItemType::DarkTorvusKey2},
+  {CPlayerState::EItemType::DarkTorvusKey3},
 };
 
 static constexpr SItemAmt HundredPercentItems[] = {
@@ -162,8 +171,6 @@ namespace GUI {
           playerState->ReInitializePowerUp(v.item, v.count);
         for (auto v : AnyPercentItems)
           playerState->ReInitializePowerUp(v.item, v.count);
-        for (auto v : KeyItems)
-          playerState->ReInitializePowerUp(v, 1);
         refillItems(playerState);
       }
       ImGui::SameLine();

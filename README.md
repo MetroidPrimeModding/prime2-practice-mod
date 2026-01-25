@@ -3,14 +3,18 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## How to install (Windows)
 - Get an Echoes .iso (i.e. using a hacked wii and cleanrip)
-- Run `patch.bat` and select your .iso
-
-## How to install (Non-windows)
-- Make sure you have python3 installed (it should come with most linux distros/macOS)
+- Run `patcher.exe`
+- Drag-and-drop or select your .iso
+- 
+## How to install (MacOS)
 - Get an Echoes .iso (i.e. using a hacked wii and cleanrip)
-- Copy an Echoes iso to 'prime2.iso' in this directory
-- Run `patch.sh` from a terminal
-  - You can drag and drop the script into a terminal to get the full path
+- Run `patcher.app`
+- Drag-and-drop or select your .iso
+
+## How to install (linux)
+- Get an Echoes .iso (i.e. using a hacked wii and cleanrip)
+- Run 'patcher' or 'patcher.app' (depending on your OS)
+- Drag-and-drop or select your .iso
 
 ## Usage
 - Launch the iso in Dolphin
@@ -63,6 +67,10 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 - Frame time graph, as measured by the game
 
 ## Changelog
+
+### 1.2.5
+- New GUI-based patcher
+- Fix any% preset keys
 
 ### 1.2.4
 - Fix 100% to have 10 pbs
