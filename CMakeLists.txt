@@ -119,10 +119,13 @@ set(SOURCE_FILES
         src/UI/DumpMemoryUI.cpp
         src/UI/DumpMemoryUI.hpp
 
-        src/version.h
         src/PracticeMod.cpp
         src/prime-practice.cpp
         src/hooks.cpp
 )
 
-add_prime_binary(prime-practice src/prime-practice.lst default.dol ${SOURCE_FILES})
+add_gc_static_binary(prime2-practice src/prime-practice.lst default.dol
+        src/patcher_config.toml
+        src/opening_practice.bnr
+        ${SOURCE_FILES})
+

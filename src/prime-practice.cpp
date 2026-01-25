@@ -11,14 +11,6 @@ __attribute__((visibility("default"))) extern void _prolog();
 [[maybe_unused]] __attribute__((visibility("default"))) extern void _earlyboot_memset(void *dst, char val, u32 size);
 #pragma clang attribute pop
 
-void *memcpy(void *dest, const void *src, size_t count);
-}
-
-[[maybe_unused]] void _earlyboot_memset(void *dst, char val, u32 size) {
-  // we don't need this in echoes. At least not yet. Because there aren't massive gaps in ram afaik.
-  memset(dst, val, size);
-}
-
 struct ForceStaticInit {
   ForceStaticInit() {
     OSReport("Static initializer forced to run\n");

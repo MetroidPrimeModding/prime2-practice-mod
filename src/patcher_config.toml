@@ -1,0 +1,14 @@
+# Example configuration for GCN Static Patcher
+game_name = "Metroid Prime 2: Echoes"
+mod_name = "Echoes Practice Mod"
+version = "1.2.5"
+# optional; if not present, hash check is skipped
+expected_iso_hash = "ce781ad1452311ca86667cf8dbd7d112"
+expected_dol_hash = "c0a39215dcb3fa9affb0f208c9f78a7c"
+# Default output ISO name
+output_name_iso = "prime2-practice-mod.iso"
+# Default output DOL name
+output_name_dol = "default_mod.dol"
+# Symbol name of the place to jump *from* to entry point of the mod
+entry_point_symbol = "PPCSetFpIEEEMode"
+truncate_files = ["Video/Attract02_32.thp"]

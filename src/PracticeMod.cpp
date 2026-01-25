@@ -13,7 +13,6 @@
 #include "prime/CWorld.hpp"
 #include "prime/CWorldState.hpp"
 #include "settings.hpp"
-#include "stb_sprintf.h"
 #include "system/ImGuiEngine.hpp"
 #include "version.h"
 
@@ -130,7 +129,7 @@ void PracticeMod::renderMenu() {
     GUI::drawInventoryMenu();
     GUI::drawSettingsMenu();
     GUI::drawWarpMenu();
-    if (ImGui::TreeNode("v%s", PRAC_MOD_VERSION)) {
+    if (ImGui::TreeNode("v%s", MOD_VERSION)) {
       ImGui::Text("Links (QR codes):");
       if (ImGui::TreeNode("Releases")) {
         GUI::drawQRCode("https://github.com/MetroidPrimeModding/prime2-practice-mod/releases", 3.0f);

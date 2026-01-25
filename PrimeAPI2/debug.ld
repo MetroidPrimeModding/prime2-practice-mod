@@ -4,10 +4,19 @@ PHDRS
 {
   maindata PT_LOAD;
   bss PT_DYNAMIC;
+  embedded_data PT_NOTE;
 }
 
 SECTIONS
 {
+  .patcher_config : {
+    KEEP(*(.patcher_config*))
+  } : embedded_data
+
+  .new_bnr : {
+      KEEP(*(.new_bnr*))
+    } : embedded_data
+
   . = _LINK_START;
 
     .text :
