@@ -32,6 +32,8 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 - `c-stick` - Scroll
 - `a` - Select item in menu
 - `b` - Go back a menu
+- `dpad-up x3` - Load saved position
+- `dpad-down x3` - Save current position
 
 ## Known Issues
 - Rare crashes (so far, inconsistent)
