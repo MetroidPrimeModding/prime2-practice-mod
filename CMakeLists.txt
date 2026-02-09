@@ -124,8 +124,11 @@ set(SOURCE_FILES
         src/hooks.cpp
 )
 
-add_gc_static_binary(prime2-practice src/prime-practice.lst default.dol
+add_gc_static_binary(prime2-practice src/prime-practice.lst
         src/patcher_config.toml
         src/opening_practice.bnr
         ${SOURCE_FILES})
 
+if(CREATE_PATCHED_DOL)
+    patch_dol(prime2-practice default.dol "${CREATE_PATCHED_DOL}")
+endif()

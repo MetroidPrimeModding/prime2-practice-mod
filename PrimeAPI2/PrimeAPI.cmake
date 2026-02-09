@@ -112,7 +112,7 @@ macro(add_symbol_object output_file symbol_list)
 endmacro()
 
 # Macro to get the required link arguments in place
-macro(add_gc_static_binary name symbol_list base_dol patch_toml bnr_file)
+macro(add_gc_static_binary name symbol_list patch_toml bnr_file)
   add_executable(${name} ${ARGN}
           "${CMAKE_CURRENT_BINARY_DIR}/dol_symbols.o"
           "${CMAKE_CURRENT_BINARY_DIR}/patcher_config.o"
@@ -133,27 +133,22 @@ macro(add_gc_static_binary name symbol_list base_dol patch_toml bnr_file)
 
   # add internal as an additional include directory, and also as a dependency to force rebuilds
   target_include_directories(${name} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/internal/")
+endmacro()
 
+macro(patch_dol name base_dol output_dol)
   # Create the patched dol
   add_custom_command(
-          OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/default_mod.dol"
+          OUTPUT "${output_dol}"
           COMMAND "${GCN_STATIC_PATCHER}"
           -m "${CMAKE_CURRENT_BINARY_DIR}/${name}"
           -i "${CMAKE_CURRENT_SOURCE_DIR}/${base_dol}"
-          -o "${CMAKE_CURRENT_BINARY_DIR}/default_mod.dol"
+          -o "${output_dol}"
           --overwrite
           DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${base_dol}" "${CMAKE_CURRENT_BINARY_DIR}/${name}"
   )
   add_custom_target(
           patch_dol ALL
-          DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/default_mod.dol"
+          DEPENDS "${output_dol}"
           SOURCES "${base_dol}"
   )
-
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/default_mod.dol"
-          DESTINATION "files/"
-          RENAME "default.dol")
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/default_mod.dol"
-          DESTINATION "sys/"
-          RENAME "main.dol")
 endmacro()
