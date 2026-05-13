@@ -24,17 +24,27 @@ else ()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 endif ()
 
+option(RANDOMIZER "")
+
+if (RANDOMIZER)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRANDOMIZER -fno-threadsafe-statics")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DRANDOMIZER")
+endif ()
+
 
 message(${CMAKE_CXX_FLAGS})
 
 set(SOURCE_FILES
         src/include/PrimeAPI.h
+
         src/include/rstl/string.h
         src/include/rstl/rstl.h
         src/include/rstl/vector.h
         src/include/rstl/auto_ptr.h
         src/include/rstl/list.h
         src/include/rstl/pair.h
+        src/include/rstl/hash_map.h
+
         src/include/dvd.h
         src/include/types.h
         src/include/os.h
@@ -65,6 +75,16 @@ set(SOURCE_FILES
         src/include/prime/CGameArea.hpp
         src/include/prime/CPlayMovie.hpp
         src/include/prime/CScriptSpawnPoint.hpp
+        src/include/prime/CMappableObj.hpp
+        src/include/prime/CMapWorldInfo.hpp
+        
+        src/include/kyoto/CObjectReference.hpp
+        src/include/kyoto/CSimplePool.hpp
+        src/include/kyoto/CToken.hpp
+        src/include/kyoto/CVParamTransfer.hpp
+        src/include/kyoto/IObj.hpp
+        src/include/kyoto/IObjectStore.hpp
+        src/include/kyoto/SObjectTag.hpp
 
         src/PracticeMod.hpp
         src/include/GetField.hpp
@@ -122,6 +142,8 @@ set(SOURCE_FILES
         src/PracticeMod.cpp
         src/prime-practice.cpp
         src/hooks.cpp
+
+        src/randomizer/randomizer_patches.cpp
 )
 
 add_gc_static_binary(prime2-practice src/prime-practice.lst

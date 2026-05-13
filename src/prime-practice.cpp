@@ -20,6 +20,7 @@ struct ForceStaticInit {
 } g_force_static_init;
 
 void InstallHooks();
+void InstallRandomizerHooks();
 bool initialized{false};
 
 // clang-format off
@@ -64,6 +65,10 @@ void _prolog() {
   PracticeMod::ClearInstance();
   Hook_OSResetSystem::InstallAtFuncPtr(&OSResetSystem);
   InstallHooks();
+
+  #ifdef RANDOMIZER
+  InstallRandomizerHooks();
+  #endif
 }
 
 // void resetLayerStates(const CStateManager &manager) {
