@@ -7,11 +7,11 @@
 DECLARE_FUNCTION_REPLACEMENT(CMappableObject_Draw) {
   static void Callback(CMappableObject* self, u32 curArea, const CMapWorldInfo& mwInfo, float alpha, bool needsVtxLoad) {
     if (*(self->getMappableObjectType()) == EMappableObjectType_Unused_0x12) {
-      const FourCC TXTR_FOURCC = 0x54585452u;
       const CAssetId PICKUP_MAP_ICON_TEXTURE = 0x3dcbaca5u;
-      static auto iconTexture = (CTexture*) gpSimplePool->GetObj(
-        SObjectTag(TXTR_FOURCC, PICKUP_MAP_ICON_TEXTURE)
-      ).GetObj()->GetContents();
+      static auto iconToken = new CToken(gpSimplePool->GetObj(
+        SObjectTag('TXTR', PICKUP_MAP_ICON_TEXTURE)
+      ));
+      static auto iconTexture = (CTexture*) iconToken->GetObj()->GetContents();
 
       // render custom pickup icon
       if (!mwInfo.IsObjectUnmapped(self->getEditorId())) {

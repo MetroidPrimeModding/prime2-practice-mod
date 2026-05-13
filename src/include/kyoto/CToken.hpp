@@ -9,7 +9,7 @@ public:
   CToken(CObjectReference* ref);
   CToken(IObj* obj); // : x0_objRef(new CObjectReference(obj)), x4_lockHeld(false) {}
   CToken(const CToken& other);
-  // ~CToken();
+  ~CToken();
 
   CObjOwnerDerivedFromIObjUntyped* GetObj();
   void Lock();
