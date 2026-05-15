@@ -47,7 +47,8 @@ DECLARE_FUNCTION_REPLACEMENT(CMappableObject_Draw) {
       } else {
         g_pickupMapIconToken = token;
       }
-
+      
+      g_pickupMapIconToken_isInitialized = true;
       token.CToken_dtor(0);
     }
 
