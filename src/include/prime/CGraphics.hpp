@@ -4,6 +4,8 @@
 #include "GetField.hpp"
 #include "MathyTypes.hpp"
 
+typedef struct {} CTevPass;
+
 enum ERglCullMode { ERglCullMode_None = 0, ERglCullMode_Front = 1, ERglCullMode_Back = 2, ERglCullMode_All = 3 };
 
 enum ERglPrimitive {
@@ -67,6 +69,7 @@ public:
   static void SetAlphaCompare(ERglAlphaFunc func0, u8 ref0, ERglAlphaOp op, ERglAlphaFunc func1, u8 ref1);
   static void DisableAllLights();
   static void SetTevStates(int i);
+  static void SetTevOp(_GXTevOp, CTevPass*);
 };
 
 class CGX {
@@ -82,7 +85,7 @@ public:
   static void SetBlendMode(_GXBlendMode, _GXBlendFactor, _GXBlendFactor, _GXLogicOp);
   static void SetVtxDescv(_GXVtxDescList *list);
   static void SetArray(u32 attr, const void *base, unsigned char stride);
-  static void Begin(u32 prim, u32 fmt, ushort verts);
+  static void Begin(u32 prim, u32 fmt, u16 verts);
   static void End();
   static void SetNumChans(int);
   static void SetNumTexGens(int);
@@ -90,6 +93,10 @@ public:
 };
 
 class CTexture {
+private:
 public:
   static void InvalidateTexmap(int texMapId);
+  void LoadMipLevel(int param1, int param2);
 };
+
+extern CTevPass g_tevPass_80416c2c;

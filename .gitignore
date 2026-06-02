@@ -13,3 +13,5 @@ target/
 src/Tweaks
 *.iso
 /release
+
+.vscode/

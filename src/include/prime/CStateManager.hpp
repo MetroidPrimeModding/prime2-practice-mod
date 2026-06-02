@@ -40,6 +40,14 @@ class CStateManager {
   // rstl::rc_ptr<CWorldLayerState> worldLayerState;
 
 public:
+  void CStateManager_ctor(
+    rstl::rc_ptr<void>* relayTracker,
+    rstl::rc_ptr<void>* areaAssetIdA,
+    int param4,
+    rstl::rc_ptr<void>* areaAssetIdB,
+    rstl::rc_ptr<void>* worldState0x1c
+  );
+
   enum EInitPhase { kInit_LoadWorld = 0, kInit_LoadFirstArea = 1, kInit_Done = 2 };
 
   void InitializeState(uint WorldAssetId, TAreaId AreaId, uint AreaAssetId);
