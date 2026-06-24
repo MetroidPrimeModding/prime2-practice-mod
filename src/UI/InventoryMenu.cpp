@@ -5,49 +5,81 @@
 #include "prime/CPlayerState.hpp"
 #include "prime/CStateManager.hpp"
 
-static constexpr CPlayerState::EItemType GeneralItems[] = {
-    CPlayerState::EItemType::EnergyTank,   CPlayerState::EItemType::CombatVisor,
-    CPlayerState::EItemType::ScanVisor,    CPlayerState::EItemType::DarkVisor,
-    CPlayerState::EItemType::EchoVisor,    CPlayerState::EItemType::GrappleBeam,
-    CPlayerState::EItemType::GravityBoost, CPlayerState::EItemType::SpaceJumpBoots,
-    CPlayerState::EItemType::ScrewAttack,  CPlayerState::EItemType::VariaSuit,
-    CPlayerState::EItemType::DarkSuit,     CPlayerState::EItemType::LightSuit,
+struct SItemEntry {
+  const CPlayerState::EItemType item;
+  const bool fullWidth{false};
 };
 
-static constexpr CPlayerState::EItemType WeaponItems[] = {
-    CPlayerState::EItemType::PowerBeam,       CPlayerState::EItemType::Missile,
-    CPlayerState::EItemType::DarkBeam,        CPlayerState::EItemType::DarkAmmo,
-    CPlayerState::EItemType::LightBeam,       CPlayerState::EItemType::LightAmmo,
-    CPlayerState::EItemType::AnnihilatorBeam, CPlayerState::EItemType::SuperMissile,
-    CPlayerState::EItemType::SeekerLauncher,  CPlayerState::EItemType::Darkburst,
-    CPlayerState::EItemType::Sunburst,        CPlayerState::EItemType::SonicBoom,
-    CPlayerState::EItemType::ChargeBeam,
+#ifdef RANDOMIZER
+static constexpr auto RandomizerItemMainPowerBomb = CPlayerState::EItemType::PersistentCounter4;
+static constexpr auto RandomizerItemMissileLauncher = CPlayerState::EItemType::PersistentCounter7;
+static constexpr auto RandomizerItemTempMissile = CPlayerState::EItemType::PersistentCounter5;
+static constexpr auto RandomizerItemTempPowerBomb = CPlayerState::EItemType::PersistentCounter6;
+static constexpr auto RandomizerItemDefenseUp = CPlayerState::EItemType::VariaSuit;
+#endif
+
+static constexpr SItemEntry GeneralItems[] = {
+  {CPlayerState::EItemType::EnergyTank, true},
+  {CPlayerState::EItemType::CombatVisor},    {CPlayerState::EItemType::ScanVisor},
+  {CPlayerState::EItemType::DarkVisor},      {CPlayerState::EItemType::EchoVisor},
+  {CPlayerState::EItemType::GrappleBeam},    {CPlayerState::EItemType::GravityBoost},
+  {CPlayerState::EItemType::SpaceJumpBoots}, {CPlayerState::EItemType::ScrewAttack},
+  {CPlayerState::EItemType::DarkSuit},       {CPlayerState::EItemType::LightSuit},
+  #ifndef RANDOMIZER
+  {CPlayerState::EItemType::VariaSuit},
+  #endif
 };
 
-static constexpr CPlayerState::EItemType MorphBallItems[] = {
-    CPlayerState::EItemType::PowerBomb, CPlayerState::EItemType::MorphBall,  CPlayerState::EItemType::MorphBallBomb,
-    CPlayerState::EItemType::BoostBall, CPlayerState::EItemType::SpiderBall, CPlayerState::EItemType::CannonBall,
+static constexpr SItemEntry WeaponItems[] = {
+    #ifndef RANDOMIZER
+    {CPlayerState::EItemType::Missile, true},
+    #else
+    {RandomizerItemMissileLauncher},            {RandomizerItemTempMissile},
+    #endif
+    {CPlayerState::EItemType::PowerBeam},       {CPlayerState::EItemType::ChargeBeam},
+    {CPlayerState::EItemType::DarkBeam},        {CPlayerState::EItemType::DarkAmmo},
+    {CPlayerState::EItemType::LightBeam},       {CPlayerState::EItemType::LightAmmo},
+    {CPlayerState::EItemType::AnnihilatorBeam}, {CPlayerState::EItemType::SeekerLauncher},
+    {CPlayerState::EItemType::SuperMissile},    {CPlayerState::EItemType::Darkburst},
+    {CPlayerState::EItemType::Sunburst},        {CPlayerState::EItemType::SonicBoom},
 };
 
-static constexpr CPlayerState::EItemType KeyItems[] = {
-    CPlayerState::EItemType::DarkAgonKey1,   CPlayerState::EItemType::SkyTempleKey1,
-    CPlayerState::EItemType::DarkAgonKey2,   CPlayerState::EItemType::SkyTempleKey2,
-    CPlayerState::EItemType::DarkAgonKey3,   CPlayerState::EItemType::SkyTempleKey3,
-    CPlayerState::EItemType::DarkTorvusKey1, CPlayerState::EItemType::SkyTempleKey4,
-    CPlayerState::EItemType::DarkTorvusKey2, CPlayerState::EItemType::SkyTempleKey5,
-    CPlayerState::EItemType::DarkTorvusKey3, CPlayerState::EItemType::SkyTempleKey6,
-    CPlayerState::EItemType::IngHiveKey1,    CPlayerState::EItemType::SkyTempleKey7,
-    CPlayerState::EItemType::IngHiveKey2,    CPlayerState::EItemType::SkyTempleKey8,
-    CPlayerState::EItemType::IngHiveKey3,    CPlayerState::EItemType::SkyTempleKey9,
+static constexpr SItemEntry MorphBallItems[] = {
+    #ifndef RANDOMIZER
+    {CPlayerState::EItemType::PowerBomb, true},
+    #else
+    {RandomizerItemMainPowerBomb},        {RandomizerItemTempPowerBomb},
+    #endif
+    {CPlayerState::EItemType::MorphBall}, {CPlayerState::EItemType::MorphBallBomb},
+    {CPlayerState::EItemType::BoostBall}, {CPlayerState::EItemType::SpiderBall},
+    {CPlayerState::EItemType::CannonBall},
 };
 
-static constexpr CPlayerState::EItemType MiscItems[] = {
-    CPlayerState::EItemType::AmberTranslator,
-    CPlayerState::EItemType::CobaltTranslator,
-    CPlayerState::EItemType::EmeraldTranslator,
-    CPlayerState::EItemType::VioletTranslator,
-    CPlayerState::EItemType::EnergyTransferModulePickup,
-    CPlayerState::EItemType::EnergyTransferModuleInventory,
+static constexpr SItemEntry KeyItems[] = {
+    {CPlayerState::EItemType::DarkAgonKey1},   {CPlayerState::EItemType::SkyTempleKey1},
+    {CPlayerState::EItemType::DarkAgonKey2},   {CPlayerState::EItemType::SkyTempleKey2},
+    {CPlayerState::EItemType::DarkAgonKey3},   {CPlayerState::EItemType::SkyTempleKey3},
+    {CPlayerState::EItemType::DarkTorvusKey1}, {CPlayerState::EItemType::SkyTempleKey4},
+    {CPlayerState::EItemType::DarkTorvusKey2}, {CPlayerState::EItemType::SkyTempleKey5},
+    {CPlayerState::EItemType::DarkTorvusKey3}, {CPlayerState::EItemType::SkyTempleKey6},
+    {CPlayerState::EItemType::IngHiveKey1},    {CPlayerState::EItemType::SkyTempleKey7},
+    {CPlayerState::EItemType::IngHiveKey2},    {CPlayerState::EItemType::SkyTempleKey8},
+    {CPlayerState::EItemType::IngHiveKey3},    {CPlayerState::EItemType::SkyTempleKey9},
+};
+
+static constexpr SItemEntry MiscItems[] = {
+    {CPlayerState::EItemType::AmberTranslator},   {CPlayerState::EItemType::CobaltTranslator},
+    {CPlayerState::EItemType::EmeraldTranslator}, {CPlayerState::EItemType::VioletTranslator},
+
+    #ifdef RANDOMIZER
+    {CPlayerState::EItemType::UnlimitedBeamAmmo}, {RandomizerItemDefenseUp},
+    {CPlayerState::EItemType::UnlimitedMissiles}, {CPlayerState::EItemType::AmpDamage},
+    #endif
+
+    {CPlayerState::EItemType::EnergyTransferModulePickup},
+    #ifndef RANDOMIZER
+    {CPlayerState::EItemType::EnergyTransferModuleInventory},
+    #endif
 };
 
 struct SItemAmt {
@@ -56,8 +88,12 @@ struct SItemAmt {
 };
 
 static constexpr SItemAmt StartingItems[] = {
-    {CPlayerState::EItemType::VariaSuit},   {CPlayerState::EItemType::PowerBeam}, {CPlayerState::EItemType::ChargeBeam},
-    {CPlayerState::EItemType::CombatVisor}, {CPlayerState::EItemType::ScanVisor}, {CPlayerState::EItemType::MorphBall},
+    #ifndef RANDOMIZER
+    {CPlayerState::EItemType::VariaSuit},
+    #endif
+    {CPlayerState::EItemType::PowerBeam}, {CPlayerState::EItemType::ChargeBeam},
+    {CPlayerState::EItemType::CombatVisor}, {CPlayerState::EItemType::ScanVisor},
+    {CPlayerState::EItemType::MorphBall},
 };
 
 static constexpr SItemAmt ILSItems[] = {
@@ -94,41 +130,68 @@ static constexpr SItemAmt AnyPercentItems[] = {
   {CPlayerState::EItemType::DarkTorvusKey3},
 };
 
-static constexpr SItemAmt HundredPercentItems[] = {
-    {CPlayerState::EItemType::PowerBeam},        {CPlayerState::EItemType::DarkBeam},
-    {CPlayerState::EItemType::LightBeam},        {CPlayerState::EItemType::AnnihilatorBeam},
-    {CPlayerState::EItemType::SuperMissile},     {CPlayerState::EItemType::Darkburst},
-    {CPlayerState::EItemType::Sunburst},         {CPlayerState::EItemType::SonicBoom},
-    {CPlayerState::EItemType::CombatVisor},      {CPlayerState::EItemType::ScanVisor},
-    {CPlayerState::EItemType::DarkVisor},        {CPlayerState::EItemType::EchoVisor},
-    {CPlayerState::EItemType::VariaSuit},        {CPlayerState::EItemType::DarkSuit},
-    {CPlayerState::EItemType::LightSuit},        {CPlayerState::EItemType::MorphBall},
-    {CPlayerState::EItemType::BoostBall},        {CPlayerState::EItemType::SpiderBall},
-    {CPlayerState::EItemType::MorphBallBomb},    {CPlayerState::EItemType::ChargeBeam},
-    {CPlayerState::EItemType::GrappleBeam},      {CPlayerState::EItemType::SpaceJumpBoots},
-    {CPlayerState::EItemType::GravityBoost},     {CPlayerState::EItemType::SeekerLauncher},
-    {CPlayerState::EItemType::ScrewAttack},      {CPlayerState::EItemType::EnergyTransferModulePickup},
-    {CPlayerState::EItemType::SkyTempleKey1},    {CPlayerState::EItemType::SkyTempleKey2},
-    {CPlayerState::EItemType::SkyTempleKey3},    {CPlayerState::EItemType::DarkAgonKey1},
-    {CPlayerState::EItemType::DarkAgonKey2},     {CPlayerState::EItemType::DarkAgonKey3},
-    {CPlayerState::EItemType::DarkTorvusKey1},   {CPlayerState::EItemType::DarkTorvusKey2},
-    {CPlayerState::EItemType::DarkTorvusKey3},   {CPlayerState::EItemType::IngHiveKey1},
-    {CPlayerState::EItemType::IngHiveKey2},      {CPlayerState::EItemType::IngHiveKey3},
-    {CPlayerState::EItemType::EnergyTank, 14},   {CPlayerState::EItemType::PowerBomb, 10},
-    {CPlayerState::EItemType::Missile, 255},     {CPlayerState::EItemType::DarkAmmo, 250},
-    {CPlayerState::EItemType::LightAmmo, 250},   {CPlayerState::EItemType::VioletTranslator},
-    {CPlayerState::EItemType::AmberTranslator},  {CPlayerState::EItemType::EmeraldTranslator},
-    {CPlayerState::EItemType::CobaltTranslator}, {CPlayerState::EItemType::SkyTempleKey4},
-    {CPlayerState::EItemType::SkyTempleKey5},    {CPlayerState::EItemType::SkyTempleKey6},
-    {CPlayerState::EItemType::SkyTempleKey7},    {CPlayerState::EItemType::SkyTempleKey8},
-    {CPlayerState::EItemType::SkyTempleKey9},    {CPlayerState::EItemType::EnergyTransferModuleInventory},
+static constexpr CPlayerState::EItemType HundredPercentItems[] = {
+    CPlayerState::EItemType::PowerBeam,         CPlayerState::EItemType::DarkBeam,
+    CPlayerState::EItemType::LightBeam,         CPlayerState::EItemType::AnnihilatorBeam,
+    CPlayerState::EItemType::SuperMissile,      CPlayerState::EItemType::Darkburst,
+    CPlayerState::EItemType::Sunburst,          CPlayerState::EItemType::SonicBoom,
+    CPlayerState::EItemType::CombatVisor,       CPlayerState::EItemType::ScanVisor,
+    CPlayerState::EItemType::DarkVisor,         CPlayerState::EItemType::EchoVisor,
+    CPlayerState::EItemType::VariaSuit,         CPlayerState::EItemType::DarkSuit,
+    CPlayerState::EItemType::LightSuit,         CPlayerState::EItemType::MorphBall,
+    CPlayerState::EItemType::BoostBall,         CPlayerState::EItemType::SpiderBall,
+    CPlayerState::EItemType::MorphBallBomb,     CPlayerState::EItemType::ChargeBeam,
+    CPlayerState::EItemType::GrappleBeam,       CPlayerState::EItemType::SpaceJumpBoots,
+    CPlayerState::EItemType::GravityBoost,      CPlayerState::EItemType::SeekerLauncher,
+    CPlayerState::EItemType::ScrewAttack,       CPlayerState::EItemType::EnergyTransferModulePickup,
+    CPlayerState::EItemType::SkyTempleKey1,     CPlayerState::EItemType::SkyTempleKey2,
+    CPlayerState::EItemType::SkyTempleKey3,     CPlayerState::EItemType::DarkAgonKey1,
+    CPlayerState::EItemType::DarkAgonKey2,      CPlayerState::EItemType::DarkAgonKey3,
+    CPlayerState::EItemType::DarkTorvusKey1,    CPlayerState::EItemType::DarkTorvusKey2,
+    CPlayerState::EItemType::DarkTorvusKey3,    CPlayerState::EItemType::IngHiveKey1,
+    CPlayerState::EItemType::IngHiveKey2,       CPlayerState::EItemType::IngHiveKey3,
+    CPlayerState::EItemType::EnergyTank,        CPlayerState::EItemType::PowerBomb,
+    CPlayerState::EItemType::Missile,           CPlayerState::EItemType::DarkAmmo,
+    CPlayerState::EItemType::LightAmmo,         CPlayerState::EItemType::VioletTranslator,
+    CPlayerState::EItemType::AmberTranslator,   CPlayerState::EItemType::EmeraldTranslator,
+    CPlayerState::EItemType::CobaltTranslator,  CPlayerState::EItemType::SkyTempleKey4,
+    CPlayerState::EItemType::SkyTempleKey5,     CPlayerState::EItemType::SkyTempleKey6,
+    CPlayerState::EItemType::SkyTempleKey7,     CPlayerState::EItemType::SkyTempleKey8,
+    CPlayerState::EItemType::SkyTempleKey9,     CPlayerState::EItemType::EnergyTransferModuleInventory,
+    #ifdef RANDOMIZER
+    RandomizerItemMainPowerBomb,                RandomizerItemTempPowerBomb,
+    RandomizerItemMissileLauncher,              RandomizerItemTempMissile,
+    RandomizerItemDefenseUp,                    CPlayerState::EItemType::AmpDamage,
+    CPlayerState::EItemType::UnlimitedBeamAmmo, CPlayerState::EItemType::UnlimitedMissiles,
+    #endif
 };
+
+#ifdef RANDOMIZER
+struct SRequiredMain {
+  CPlayerState::EItemType mainItem;
+  CPlayerState::EItemType tempAmmo;
+  CPlayerState::EItemType realAmmo;
+};
+
+static constexpr SRequiredMain RequiredMainData[] = {
+  {
+    RandomizerItemMissileLauncher,
+    RandomizerItemTempMissile,
+    CPlayerState::EItemType::Missile,
+  },
+  {
+    RandomizerItemMainPowerBomb,
+    RandomizerItemTempPowerBomb,
+    CPlayerState::EItemType::PowerBomb,
+  }
+};
+#endif
 
 namespace GUI {
   void RenderItemType(CPlayerState *playerState, CPlayerState::EItemType itemType);
   const char *ItemTypeToName(CPlayerState::EItemType type);
-  static inline void RenderItemsDualColumn(CPlayerState *playerState, const CPlayerState::EItemType *items, int start,
-                                           int end);
+  static inline void RenderItemTab(CPlayerState *playerState, const char *label, const SItemEntry items[],
+                                   int size, bool showLayerWarning = false);
 
   void clearItems(CPlayerState *playerState);
 
@@ -147,7 +210,7 @@ namespace GUI {
       ImGui::SameLine();
       if (ImGui::Button("All")) {
         for (auto v : HundredPercentItems)
-          playerState->ReInitializePowerUp(v.item, v.count);
+          playerState->ReInitializePowerUp(v, CPlayerState::GetPowerUpMaxValue(v));
         refillItems(playerState);
       }
       ImGui::SameLine();
@@ -162,6 +225,7 @@ namespace GUI {
           playerState->ReInitializePowerUp(v.item, v.count);
         refillItems(playerState);
       }
+      #ifndef RANDOMIZER
       ImGui::SameLine();
       if (ImGui::Button("Any%")) {
         clearItems(playerState);
@@ -182,33 +246,14 @@ namespace GUI {
           playerState->ReInitializePowerUp(v.item, v.count);
         refillItems(playerState);
       }
+      #endif
 
       if (ImGui::BeginTabBar("Items")) {
-        if (ImGui::BeginTabItem("General")) {
-          RenderItemType(playerState, GeneralItems[0]); // full width
-          RenderItemsDualColumn(playerState, GeneralItems, 1, sizeof(GeneralItems) / sizeof(GeneralItems[0]));
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Weapons")) {
-          RenderItemType(playerState, WeaponItems[0]); // full width
-          RenderItemsDualColumn(playerState, WeaponItems, 1, sizeof(WeaponItems) / sizeof(WeaponItems[0]));
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Morph Ball")) {
-          RenderItemType(playerState, MorphBallItems[0]); // full width
-          RenderItemsDualColumn(playerState, MorphBallItems, 1, sizeof(MorphBallItems) / sizeof(MorphBallItems[0]));
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Keys")) {
-          ImGui::Text("NOTE: This doesn't affect layers");
-          RenderItemsDualColumn(playerState, KeyItems, 0, sizeof(KeyItems) / sizeof(KeyItems[0]));
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Misc")) {
-          ImGui::Text("NOTE: This doesn't affect layers");
-          RenderItemsDualColumn(playerState, MiscItems, 0, sizeof(MiscItems) / sizeof(MiscItems[0]));
-          ImGui::EndTabItem();
-        }
+        RenderItemTab(playerState, "General", GeneralItems, sizeof(GeneralItems) / sizeof(GeneralItems[0]));
+        RenderItemTab(playerState, "Weapons", WeaponItems, sizeof(WeaponItems) / sizeof(WeaponItems[0]));
+        RenderItemTab(playerState, "Morph Ball", MorphBallItems, sizeof(MorphBallItems) / sizeof(MorphBallItems[0]));
+        RenderItemTab(playerState, "Keys", KeyItems, sizeof(KeyItems) / sizeof(KeyItems[0]), true);
+        RenderItemTab(playerState, "Misc", MiscItems, sizeof(MiscItems) / sizeof(KeyItems[0]), true);
         ImGui::EndTabBar();
       }
 
@@ -234,11 +279,81 @@ namespace GUI {
     }
   }
 
+  bool isItemEnabled(CPlayerState *playerState, CPlayerState::EItemType itemType) {
+    return playerState->GetItemCapacity(itemType) >= 1 && playerState->GetItemAmount(itemType) >= 1;
+  }
+
+  SItemAmt adjustItemMaximumAndType(CPlayerState *playerState, u32 maxValue, CPlayerState::EItemType itemType) {
+    #ifdef RANDOMIZER 
+    for (auto& requiredMain : RequiredMainData) {
+      if (itemType == requiredMain.mainItem) {
+        // treat the main item as if it has a max capacity of 1
+        maxValue = 1;
+        break;
+      }
+      else if (itemType == requiredMain.tempAmmo) {
+        // use the real ammo's max capacity, in case it's out of sync with temp ammo
+        maxValue = CPlayerState::GetPowerUpMaxValue(requiredMain.realAmmo);
+
+        if (isItemEnabled(playerState, requiredMain.mainItem)) {
+          // use the real ammo if player has the main item
+          itemType = requiredMain.realAmmo;
+        }
+
+        break;
+      }
+    }
+    #endif
+
+    return {itemType, int(maxValue)};
+  }
+
+  // sets one item (`to`) to have the capacity of another (`from`), then sets the capacity of `from` to 0
+  void convertItems(CPlayerState *playerState, CPlayerState::EItemType from, CPlayerState::EItemType to, bool reversed) {
+    if (reversed) {
+      auto old_to = to;
+      to = from;
+      from = old_to;
+    }
+
+    int capacity = int(playerState->GetItemCapacity(from));
+    playerState->ReInitializePowerUp(to, capacity);
+    playerState->ResetAndIncrPickUp(to, capacity);
+    playerState->ReInitializePowerUp(from, 0);
+  }
+
+  void finalizeItemChange(CPlayerState *playerState, CPlayerState::EItemType itemType, bool enabled) {
+    #ifdef RANDOMIZER
+    for (auto& requiredMain : RequiredMainData) {
+      if (itemType == requiredMain.mainItem) {
+        // if the main item was toggled, convert between real and temporary ammo
+        convertItems(
+          playerState,
+          requiredMain.tempAmmo,
+          requiredMain.realAmmo,
+          !enabled
+        );
+        break;
+      }
+    }
+    #endif
+    // if (itemType == CPlayerState::EItemType::VariaSuit || itemType == CPlayerState::EItemType::PowerSuit ||
+    //     itemType == CPlayerState::EItemType::GravitySuit || itemType == CPlayerState::EItemType::PhazonSuit) {
+    //   // TODO
+    //   //          g_StateManager->Player()->AsyncLoadSuit(*g_StateManager);
+    //     }
+  }
+
   void RenderItemType(CPlayerState *playerState, CPlayerState::EItemType itemType) {
     u32 maxValue = CPlayerState::GetPowerUpMaxValue(itemType);
     const char *name = ItemTypeToName(itemType);
+
+    auto adjusted = adjustItemMaximumAndType(playerState, maxValue, itemType);
+    maxValue = u32(adjusted.count);
+    itemType = adjusted.item;
+
     if (maxValue == 1) {
-      bool enabled = playerState->GetItemCapacity(itemType) == 1 && playerState->GetItemAmount(itemType) == 1;
+      bool enabled = isItemEnabled(playerState, itemType);
       if (ImGui::Checkbox(name, &enabled)) {
         if (enabled) {
           playerState->ReInitializePowerUp(itemType, 1);
@@ -246,11 +361,7 @@ namespace GUI {
         } else {
           playerState->ReInitializePowerUp(itemType, 0);
         }
-        // if (itemType == CPlayerState::EItemType::VariaSuit || itemType == CPlayerState::EItemType::PowerSuit ||
-        //     itemType == CPlayerState::EItemType::GravitySuit || itemType == CPlayerState::EItemType::PhazonSuit) {
-        //   // TODO
-        //   //          g_StateManager->Player()->AsyncLoadSuit(*g_StateManager);
-        //     }
+        finalizeItemChange(playerState, itemType, enabled);
       }
     } else if (maxValue > 1) {
       int capacity = int(playerState->GetItemCapacity(itemType));
@@ -258,6 +369,7 @@ namespace GUI {
       if (maxValue > 100) {
         speed = 5;
       }
+
       if (ImGui::DragInt(name, &capacity, speed, 0, int(maxValue), "%d", ImGuiSliderFlags_AlwaysClamp)) {
         playerState->ReInitializePowerUp(itemType, u32(capacity));
         playerState->ResetAndIncrPickUp(itemType, u32(capacity));
@@ -292,7 +404,11 @@ namespace GUI {
     case CPlayerState::EItemType::DarkVisor:
       return "Dark Visor";
     case CPlayerState::EItemType::VariaSuit:
+      #ifndef RANDOMIZER
       return "Varia Suit";
+      #else
+      return "Defense Up";
+      #endif
     case CPlayerState::EItemType::DarkSuit:
       return "Dark Suit";
     case CPlayerState::EItemType::LightSuit:
@@ -324,7 +440,11 @@ namespace GUI {
     case CPlayerState::EItemType::ScrewAttack:
       return "Screw Attack";
     case CPlayerState::EItemType::EnergyTransferModulePickup:
+      #ifndef RANDOMIZER
       return "Energy Transfer Module Pickup";
+      #else
+      return "Energy Transfer Module";
+      #endif
     case CPlayerState::EItemType::SkyTempleKey1:
       return "Sky Temple Key 1";
     case CPlayerState::EItemType::SkyTempleKey2:
@@ -354,9 +474,9 @@ namespace GUI {
     case CPlayerState::EItemType::EnergyTank:
       return "Energy Tank";
     case CPlayerState::EItemType::PowerBomb:
-      return "Power Bomb";
+      return "Power Bomb Ammo";
     case CPlayerState::EItemType::Missile:
-      return "Missile";
+      return "Missile Ammo";
     case CPlayerState::EItemType::DarkAmmo:
       return "Dark Ammo";
     case CPlayerState::EItemType::LightAmmo:
@@ -384,7 +504,7 @@ namespace GUI {
     case CPlayerState::EItemType::Invisibility:
       return "Invisibility";
     case CPlayerState::EItemType::AmpDamage:
-      return "Amp Damage";
+      return "Massive Damage";
     case CPlayerState::EItemType::Invincibility:
       return "Invincibility";
     case CPlayerState::EItemType::UnknownItem60:
@@ -408,13 +528,29 @@ namespace GUI {
     case CPlayerState::EItemType::PersistentCounter3:
       return "Persistent Counter 3";
     case CPlayerState::EItemType::PersistentCounter4:
+      #ifndef RANDOMIZER
       return "Persistent Counter 4";
+      #else
+      return "Power Bomb";
+      #endif
     case CPlayerState::EItemType::PersistentCounter5:
+      #ifndef RANDOMIZER
       return "Persistent Counter 5";
+      #else
+      return "Missile Ammo";
+      #endif
     case CPlayerState::EItemType::PersistentCounter6:
+      #ifndef RANDOMIZER
       return "Persistent Counter 6";
+      #else
+      return "Power Bomb Ammo";
+      #endif
     case CPlayerState::EItemType::PersistentCounter7:
-      return "Persistent Counter 7";
+      #ifndef RANDOMIZER
+      return "Persistent Counter 5";
+      #else
+      return "Missile Launcher";
+      #endif
     case CPlayerState::EItemType::PersistentCounter8:
       return "Persistent Counter 8";
     case CPlayerState::EItemType::SwitchVisorCombat:
@@ -492,19 +628,40 @@ namespace GUI {
     return "Unknown";
   }
 
-  void RenderItemsDualColumn(CPlayerState *playerState, const CPlayerState::EItemType *items, int start, int end) {
-    ImGui::BeginGroup();
-    // Render left group
-    for (int i = start; i < end; i += 2) {
-      RenderItemType(playerState, items[i]);
+  void RenderItemTab(CPlayerState *playerState, const char *label, const SItemEntry items[], int size, bool showLayerWarning) {
+    if (ImGui::BeginTabItem(label)) {
+      #ifndef RANDOMIZER
+      if (showLayerWarning) {
+        ImGui::Text("NOTE: This doesn't affect layers");
+      }
+      #endif
+
+      for (int i = 0; i < size; i++) {
+        // render full-width item
+        if (items[i].fullWidth) {
+          RenderItemType(playerState, items[i].item);
+          continue;
+        }
+
+        // end these groups either at the end of the array,
+        // or when they encounter a full-width item
+        int groupEnd;
+        for (groupEnd = i; groupEnd < size && !items[groupEnd].fullWidth; groupEnd++);
+
+        if (ImGui::BeginTable(label, 2, ImGuiTableFlags_SizingStretchProp)) {
+          for (int j = i; j < groupEnd; j++) {
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(80.0);
+            RenderItemType(playerState, items[j].item);
+          }
+          ImGui::EndTable();
+        }
+
+        // advance the loop past the items we just rendered
+        i = groupEnd - 1;
+      }
+      
+      ImGui::EndTabItem();
     }
-    ImGui::EndGroup();
-    ImGui::SameLine();
-    ImGui::BeginGroup();
-    // Render right group
-    for (int i = start + 1; i < end; i += 2) {
-      RenderItemType(playerState, items[i]);
-    }
-    ImGui::EndGroup();
   }
 } // namespace GUI
