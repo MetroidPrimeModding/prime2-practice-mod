@@ -1,6 +1,9 @@
-#include "PracticeMod.hpp"
 #include "utils/ReplaceFunction.hpp"
 #include <os.h>
+
+#ifdef PRACTICE_MOD
+#include "PracticeMod.hpp"
+#endif
 
 // Forward decls
 class CPlayer;
@@ -62,9 +65,12 @@ void _prolog() {
   // this is the only thing in the function we replace
   asm volatile("mtfsb0 5");
   runStaticInitializers();
-  PracticeMod::ClearInstance();
   Hook_OSResetSystem::InstallAtFuncPtr(&OSResetSystem);
+
+  #ifdef PRACTICE_MOD
+  PracticeMod::ClearInstance();
   InstallHooks();
+  #endif
 
   #ifdef RANDOMIZER
   InstallRandomizerHooks();

@@ -24,17 +24,31 @@ else ()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 endif ()
 
-option(RANDOMIZER "")
+option(
+  PRACTICE_MOD
+  "Enables the practice menu."
+  ON
+)
+option(
+  RANDOMIZER
+  "Enables certain patches for the randomizer. Adjusts certain behavior of the practice menu, if that's enabled."
+  OFF
+)
+
+if (PRACTICE_MOD)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPRACTICE_MOD")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPRACTICE_MOD")
+endif ()
+
 
 if (RANDOMIZER)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRANDOMIZER -fno-threadsafe-statics")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DRANDOMIZER")
 endif ()
 
-
 message(${CMAKE_CXX_FLAGS})
 
-set(SOURCE_FILES
+list(APPEND SOURCE_FILES
         src/include/PrimeAPI.h
 
         src/include/rstl/string.h
@@ -51,6 +65,8 @@ set(SOURCE_FILES
         src/include/pad.h
         src/include/utils.hpp
         src/include/MathyTypes.hpp
+        src/include/GetField.hpp
+        src/include/GX.hpp
 
         src/include/prime/CMemory.hpp
         src/include/prime/CStateManager.hpp
@@ -86,20 +102,27 @@ set(SOURCE_FILES
         src/include/kyoto/IObjectStore.hpp
         src/include/kyoto/SObjectTag.hpp
 
-        src/PracticeMod.hpp
-        src/include/GetField.hpp
+        src/utils/ReplaceFunction.hpp
+        src/utils/ReplaceFunction.cpp
+        src/utils/DataByteStream.hpp
+        src/utils/DataBitStream.cpp
+
+        src/prime-practice.cpp
+)
+
+if (PRACTICE_MOD)
+  list(APPEND SOURCE_FILES
         src/include/settings.hpp
-        src/include/GX.hpp
 
         ext/imgui/imgui.cpp
-        #        ext/imgui/imgui_demo.cpp
+        # ext/imgui/imgui_demo.cpp
         ext/imgui/imgui_draw.cpp
         ext/imgui/imgui_tables.cpp
         ext/imgui/imgui_widgets.cpp
-        #        ext/imgui/imgui_demo.cpp
+        # ext/imgui/imgui_demo.cpp
         ext/imgui/imgui.h
         ext/imgui/imgui_internal.h
-        #        imgui/imgui_draw.cpp
+        # imgui/imgui_draw.cpp
 
         ext/QRCode/src/qrcode.c
 
@@ -117,10 +140,6 @@ set(SOURCE_FILES
         src/system/libc.c
 
         src/utils/settings.cpp
-        src/utils/ReplaceFunction.hpp
-        src/utils/ReplaceFunction.cpp
-        src/utils/DataByteStream.hpp
-        src/utils/DataBitStream.cpp
 
         src/UI/ImHelpers.hpp
         src/UI/ImHelpers.cpp
@@ -140,11 +159,15 @@ set(SOURCE_FILES
         src/UI/DumpMemoryUI.hpp
 
         src/PracticeMod.cpp
-        src/prime-practice.cpp
         src/hooks.cpp
+  )
+endif ()
 
+if (RANDOMIZER)
+  list(APPEND SOURCE_FILES
         src/randomizer/randomizer_patches.cpp
-)
+  )
+endif()
 
 add_gc_static_binary(prime2-practice src/prime-practice.lst
         src/patcher_config.toml
