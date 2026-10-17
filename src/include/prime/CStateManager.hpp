@@ -52,7 +52,22 @@ public:
   enum EInitPhase { kInit_LoadWorld = 0, kInit_LoadFirstArea = 1, kInit_Done = 2 };
 
   void InitializeState(uint WorldAssetId, TAreaId AreaId, uint AreaAssetId);
-  void Update(float dt);
+  CStateManager *Destroy(int deleting); // MWCC deleting destructor; returns this.
+  void Update(float dt, class CArchitectureQueue &queue);
+  bool IsMultiplayer() const;
+  float GetEscapeSequenceTimer() const;
+  enum class Transition { InGame = 0, Pause = 2, PauseMenu = 3, LogBook = 4, Save = 5 };
+  void DeferStateTransition(Transition transition);
+  Transition DeferredTransition() const { return *GetField<Transition>(this, 0x2470); }
+  // G2ME01 offsets and masks audited in SAVE_ANYWHERE.md.
+  bool FullyInitialized() const { return *GetField<int>(this, 0x16f0) == 3; }
+  int GameState() const { return *GetField<int>(this, 0x16ec); }
+  bool UnsafeSaveTransition() const {
+    // Quit or cinematic pause, pending dock, or owned portal transition.
+    return (*GetField<u8>(this, 0x294c) & 0x44) ||
+           *GetField<int>(this, 0x28f8) != -1 || *GetField<void *>(this, 0x2900);
+  }
+  CCameraManager *SaveCamera() const { return *GetField<CCameraManager *>(this, 0x151c); }
 
   inline CFinalInput *GetFinalInput() const {
     return GetField<CFinalInput>(this, 0x153C);

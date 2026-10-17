@@ -136,6 +136,7 @@ set(SOURCE_FILES
         src/UI/WarpMenu.h
         src/UI/WarpMenu.cpp
         src/UI/PlayerMenu.hpp
+        src/UI/SaveAnywhere.cpp
         src/UI/PlayerMenu.cpp
         src/UI/InventoryMenu.hpp
         src/UI/InventoryMenu.cpp

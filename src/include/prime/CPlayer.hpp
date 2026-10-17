@@ -9,6 +9,7 @@ class CCameraBobber;
 
 class CPlayer : public CPhysicsActor {
 public:
+  bool IsMorphBallTransitioning() const;
   enum class EPlayerMovementState: u32 {
     OnGround=0, StartJump, InAir, Falling, FallingMorphed
   };

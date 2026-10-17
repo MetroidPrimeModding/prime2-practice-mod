@@ -1,4 +1,6 @@
 #include "PlayerMenu.hpp"
+
+#include "SaveAnywhere.hpp"
 #include "WarpMenu.h"
 #include "imgui.h"
 #include "prime/CGameArea.hpp"
@@ -78,6 +80,9 @@ namespace GUI {
         player->getPos()->z = requestedTransform.z;
         requestPosition(requestedTransform);
       }
+      ImGui::Separator();
+      SaveAnywhere::draw();
+      ImGui::Separator();
 
       if (ImGui::Button("IS on")) {
         player->GetAngularVelocity()->x = NAN;

@@ -9,6 +9,7 @@ class CCameraManager;
 
 class CGameState {
 public:
+  u64 CardSerial() const { return *GetField<u64>(this, 0x108); }
   void SetCurrentWorldId(CAssetId id);
   CAssetId CurrentWorldAssetId();
   CWorldState &StateForWorld(unsigned int world);

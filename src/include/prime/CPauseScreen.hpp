@@ -10,6 +10,7 @@ public:
     EState_Active = 2,
     EState_Exiting = 3,
   };
+  void CloseForSave() { *GetField<EPauseScreenState>(this, 0x24C) = EPauseScreenState::EState_Exiting; }
   void ProcessControllerInput(const class CFinalInput &input);
 
   EPauseScreenState GetState() { return *GetField<EPauseScreenState>(this, 0x24C); }

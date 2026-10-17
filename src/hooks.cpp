@@ -1,3 +1,4 @@
+#include "UI/SaveAnywhere.hpp"
 #include "PracticeMod.hpp"
 #include "system/CardGate.hpp"
 #include "prime/CMemoryCardSys.hpp"
@@ -64,6 +65,7 @@ DECLARE_FUNCTION_REPLACEMENT(CStringTable_GetString) {
 // CGraphics::EndScene
 DECLARE_FUNCTION_REPLACEMENT(CGraphics_EndScene) {
   static void Callback() {
+    SaveAnywhere::tick();
     CardGate::tick();
     PracticeMod::GetInstance()->render();
     Orig();
@@ -92,6 +94,20 @@ DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
   }
 };
 
+DECLARE_FUNCTION_REPLACEMENT(SaveAnywhere_Teardown) {
+  static CStateManager *Callback(CStateManager *self, int deleting) {
+    SaveAnywhere::cancel();
+    return Orig(self, deleting);
+  }
+};
+
+DECLARE_FUNCTION_REPLACEMENT(SaveAnywhere_Update) {
+  static void Callback(CStateManager *self, float dt, CArchitectureQueue &queue) {
+    Orig(self, dt, queue);
+    SaveAnywhere::update();
+  }
+};
+
 // CPlayer::ProcessInput
 DECLARE_FUNCTION_REPLACEMENT(CPlayer_ProcessInput) {
   static void Callback(CPlayer *self, const CFinalInput &input, CStateManager &mgr) {
@@ -107,6 +123,11 @@ DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessControllerInput) {
       return;
     }
 
+    if (SaveAnywhere::consumeCloseRequest()) {
+      self->CloseForSave();
+      PracticeMod::GetInstance()->pauseScreenClosed();
+      return;
+    }
     PracticeMod::GetInstance()->pauseScreenOpened();
     if (input.PStart()) {
       PracticeMod::GetInstance()->pauseScreenClosed();
@@ -210,6 +231,8 @@ DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
 // clang-format on
 
 void InstallHooks() {
+  SaveAnywhere_Teardown::InstallAtFuncPtr(&CStateManager::Destroy);
+  SaveAnywhere_Update::InstallAtFuncPtr(&CStateManager::Update);
   CardSys_Destroy::InstallAtFuncPtr(&CMemoryCardSys::Destroy);
   CardDriver_Destroy::InstallAtFuncPtr(&CMemoryCardDriver::Destroy);
   CardDriver_Construct::InstallAtFuncPtr(&CMemoryCardDriver::Construct);
