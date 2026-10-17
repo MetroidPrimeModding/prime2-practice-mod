@@ -1,34 +1,49 @@
 name: CI
 
 on:
-  pull_request:
-  merge_group:
   push:
     branches:
-      - main
-    tags:
-      - '*'
+      - '**'
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      artifact:
+        description: Artifact containing the Release Echoes ELF and map
+        value: ${{ jobs.elf.outputs.artifact }}
+
+permissions:
+  contents: read
 
 jobs:
   elf:
     runs-on: ubuntu-latest
-    name: Build Practice Mod ELFs
-
+    name: Build Echoes Practice Mod ELF
+    outputs:
+      artifact: ${{ steps.name.outputs.artifact }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0
-          submodules: 'recursive'
+          submodules: recursive
 
       - name: Build
-        run: ./build.sh Release
+        run: |
+          ./build.sh Release -DRANDOMIZER=OFF -DCREATE_PATCHED_DOL=
+          mkdir out
+          cp cmake-build-release-docker/prime2-practice out/prime2-practice.elf
+          cp cmake-build-release-docker/prime2-practice.map out/prime2-practice.map
 
-      - name: Upload elf
+      - name: Name artifact
+        id: name
+        run: echo "artifact=prime2-practice-${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload ELF and map
         uses: actions/upload-artifact@v7
         with:
-          name: Release Elf
-          if-no-files-found: error
+          name: ${{ steps.name.outputs.artifact }}
           path: |
-            cmake-build-release-docker/prime2-practice
-            cmake-build-release-docker/prime2-practice.map
+            out/prime2-practice.elf
+            out/prime2-practice.map
+          if-no-files-found: error

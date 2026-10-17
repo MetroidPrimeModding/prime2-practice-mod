@@ -70,6 +70,9 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Changelog
 
+### 1.3.0
+- Build improvements ported from mp1
+
 ### 1.2.5
 - New GUI-based patcher
 - Fix any% preset keys

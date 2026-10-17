@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate version and changelog
+        id: version
+        env:
+          RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        run: |
+          version=$(./release_version.sh "$RELEASE_TAG")
+          ./release_notes.sh "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: check
+    uses: ./.github/workflows/ci.yml
+
+  package:
+    needs: [check, build]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.build.outputs.artifact }}
+          path: build
+      - name: Package
+        run: |
+          ./package_release.sh "$VERSION" build/prime2-practice.elf "release/$VERSION"
+          ./release_notes.sh "$VERSION" > "release/$VERSION/release-notes.md"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prime2-practice-${{ env.VERSION }}
+          path: |
+            release/${{ env.VERSION }}/*.elf
+            release/${{ env.VERSION }}/*.zip
+            release/${{ env.VERSION }}/*.tar.gz
+            release/${{ env.VERSION }}/release-notes.md
+          if-no-files-found: error
+
+  publish:
+    if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+    needs: [check, package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: prime2-practice-${{ needs.check.outputs.version }}
+          path: release
+      - name: Publish version tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" \
+            --notes-file release/release-notes.md release/*.elf release/*.zip release/*.tar.gz

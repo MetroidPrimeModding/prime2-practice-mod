@@ -1,7 +1,7 @@
 # Example configuration for GCN Static Patcher
 game_name = "Metroid Prime 2: Echoes"
 mod_name = "Echoes Practice Mod"
-version = "1.2.5"
+version = "1.3.0"
 # optional; if not present, hash check is skipped
 expected_iso_hash = "ce781ad1452311ca86667cf8dbd7d112"
 expected_dol_hash = "c0a39215dcb3fa9affb0f208c9f78a7c"
