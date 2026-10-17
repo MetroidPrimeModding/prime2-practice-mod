@@ -2,6 +2,7 @@
 #include "ModuleRemovalHooks.hpp"
 #include "MultiplayerRemoval.hpp"
 #include "PracticeMod.hpp"
+#include "system/CardGate.hpp"
 #include "carveouts.h"
 #include "utils/ReplaceFunction.hpp"
 #include <os.h>
@@ -52,6 +53,7 @@ bool initialized{false};
 DECLARE_FUNCTION_REPLACEMENT(Hook_OSResetSystem) {
   static void Callback(int reset,u32 resetCode,int forceMenu) {
     OSReport("Hooked OSResetSystem: reset=%d code=%u forceMenu=%d\n", reset, resetCode, forceMenu);
+    CardGate::drain();
     // initialized = false;
     // ReplaceFunctionHookPool::Reset();
     Orig(reset, resetCode, forceMenu);

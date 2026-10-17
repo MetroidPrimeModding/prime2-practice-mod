@@ -49,6 +49,7 @@ This project can produce a release & patch an Echoes iso to be the practice mod
   - Edit your item inventory
 - Settings
   - On screen display settings
+  - Save/reload settings on the Slot A memory card
   - RAM Dump to screen (no decoder yet)
 - Warps
   - Warp to any room
@@ -72,6 +73,7 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 ## Changelog
 
 ### 1.3.0
+- Persistent settings
 - Build improvements ported from mp1
 - Display the practice mod version in place of the main menu's Multiplayer label.
 - A bunch of minor address fixes from decomp

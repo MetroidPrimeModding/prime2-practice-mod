@@ -1,4 +1,6 @@
 #include "PracticeMod.hpp"
+#include "system/CardGate.hpp"
+#include "prime/CMemoryCardSys.hpp"
 #include "prime/CAutoMapper.hpp"
 #include "prime/CGameArea.hpp"
 #include "prime/CFinalInput.hpp"
@@ -23,6 +25,29 @@
 //   }
 // };
 
+DECLARE_FUNCTION_REPLACEMENT(CardDriver_Construct) {
+  static CMemoryCardDriver *Callback(CMemoryCardDriver *self, CMemoryCardSys::EMemoryCardPort port,
+                                    u32 banner, u32 icon0, u32 icon1, bool import) {
+    CardGate::driverConstructing();
+    return Orig(self, port, banner, icon0, icon1, import);
+  }
+};
+
+DECLARE_FUNCTION_REPLACEMENT(CardDriver_Destroy) {
+  static CMemoryCardDriver *Callback(CMemoryCardDriver *self, int deleting) {
+    CMemoryCardDriver *result = Orig(self, deleting);
+    if (self) CardGate::driverDestroyed();
+    return result;
+  }
+};
+
+DECLARE_FUNCTION_REPLACEMENT(CardSys_Destroy) {
+  static CMemoryCardSys *Callback(CMemoryCardSys *self, int deleting) {
+    if (self) CardGate::drain();
+    return Orig(self, deleting);
+  }
+};
+
 // CStringTable::GetString
 DECLARE_FUNCTION_REPLACEMENT(CStringTable_GetString) {
   static const char16_t *Callback(const CStringTable *self, int idx) {
@@ -39,6 +64,7 @@ DECLARE_FUNCTION_REPLACEMENT(CStringTable_GetString) {
 // CGraphics::EndScene
 DECLARE_FUNCTION_REPLACEMENT(CGraphics_EndScene) {
   static void Callback() {
+    CardGate::tick();
     PracticeMod::GetInstance()->render();
     Orig();
   }
@@ -184,6 +210,9 @@ DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
 // clang-format on
 
 void InstallHooks() {
+  CardSys_Destroy::InstallAtFuncPtr(&CMemoryCardSys::Destroy);
+  CardDriver_Destroy::InstallAtFuncPtr(&CMemoryCardDriver::Destroy);
+  CardDriver_Construct::InstallAtFuncPtr(&CMemoryCardDriver::Construct);
   CMapWorldInfo_IsWorldVisible::InstallAtFuncPtr(&CMapWorldInfo::IsWorldVisible);
   CMapWorldInfo_IsAreaVisible::InstallAtFuncPtr(&CMapWorldInfo::IsAreaVisible);
   CMapArea_GetIsVisibleToAutoMapper::InstallAtFuncPtr(&CMapArea::GetIsVisibleToAutoMapper);

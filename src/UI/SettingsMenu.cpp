@@ -1,4 +1,5 @@
 #include "SettingsMenu.hpp"
+#include "system/CardGate.hpp"
 #include "ImHelpers.hpp"
 #include <imgui.h>
 
@@ -14,6 +15,14 @@ namespace GUI {
 
   void drawSettingsMenu() {
     if (ImHelpers::TreeNodeNavLeft("Settings")) {
+      ImGui::TextUnformatted("Memory card: Slot A");
+      if (ImGui::Button("Save settings")) CardGate::requestSave();
+      ImGui::SameLine();
+      if (ImGui::Button("Reload settings")) CardGate::requestLoad();
+      if (CardGate::busy()) ImGui::TextUnformatted("Accessing memory card...");
+      else if (CardGate::saveRequested()) ImGui::TextUnformatted("Save queued; waiting for game card access");
+      if (CardGate::dirty()) ImGui::TextUnformatted("Unsaved settings changes");
+      if (const char *message = CardGate::message()) ImGui::TextUnformatted(message);
       if (ImGui::TreeNode("On-screen display")) {
         BITFIELD_CHECKBOX("Show", SETTINGS.OSD_show);
         BITFIELD_CHECKBOX("Pos", SETTINGS.OSD_showPos);

@@ -124,6 +124,7 @@ set(SOURCE_FILES
         src/system/libc.c
         src/system/format.c
 
+        src/system/CardGate.cpp
         src/utils/settings.cpp
         src/utils/ReplaceFunction.hpp
         src/utils/ReplaceFunction.cpp
