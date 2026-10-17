@@ -58,7 +58,9 @@ def validate(elf, config, dol=None, patched=False):
         assert (va == start and va + size == end) or any(lo <= va < va + size <= hi for lo, hi in regions), 'unexpected segment'
         assert all(va + size <= lo or va >= hi for lo, hi in occupied), 'overlapping segments'
         occupied.append((va, va + size))
-    boot_symbols = ['_prolog', '_earlyboot_memset'] + (['InstallGalleryHooks'] if stomps else [])
+    boot_symbols = ['_prolog', '_earlyboot_memset'] + (['InstallRemovalHooks', 'DisableImageGallery', 'PatchGalleryModule', 'PatchMultiplayerModule'] if stomps else [])
+    if any(c.name.startswith('multiplayer_') for c in cfg['stomps']):
+        boot_symbols.append('DisableMultiplayer')
     for name in boot_symbols:
         assert start <= symbols[name] < end, 'boot code outside maindata'
     for section in sections:

@@ -77,6 +77,7 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 - Update the community QR link
 - Memory usage reduced:
   - Remove the image gallery
+  - Disable multiplayer
 
 ### 1.2.5
 - New GUI-based patcher

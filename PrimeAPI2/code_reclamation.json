@@ -1,0 +1,240 @@
+{
+  "revision": "G2ME01",
+  "purpose": "Reviewed gallery and multiplayer code reuse after entry-path gates",
+  "ranges": [
+    {
+      "name": "gallery_1",
+      "start": "0x8018C4C0",
+      "size": "0x2620",
+      "sha256": "353e5ec1f733b5ad66193cafcb83cc23acdbc3d0ac8b0b4a4ac026d861f5a6f4"
+    },
+    {
+      "name": "gallery_2",
+      "start": "0x8018EF60",
+      "size": "0x14C0",
+      "sha256": "d3eac302e05087423406314a487d9aa5d1cfce67e3f71bbf9e33c89d75058019"
+    },
+    {
+      "name": "gallery_3",
+      "start": "0x80190500",
+      "size": "0xC40",
+      "sha256": "bad0ec7a4f33fd1c6d85835907f84889a157ec5c306c93ac70267c9d2424dc23"
+    },
+    {
+      "name": "gallery_4",
+      "start": "0x801911E0",
+      "size": "0x280",
+      "sha256": "fc2fd1e5713c1bc372658e96731c50ba8b6ecd6492197d99d31d1074e98385bf"
+    },
+    {
+      "name": "gallery_5",
+      "start": "0x80191540",
+      "size": "0x160",
+      "sha256": "1b70ce7885f9509db4193e4c5a9b129067028a67c2780d724ab1fab36f744721"
+    },
+    {
+      "name": "multiplayer_1",
+      "start": "0x80019E20",
+      "size": "0x20",
+      "sha256": "5504c6d3dd2605e74d6fbc97285a02faa50d651dd3fcddf253f402bed53cd46a"
+    },
+    {
+      "name": "multiplayer_2",
+      "start": "0x80084B80",
+      "size": "0x20",
+      "sha256": "c474a982a989d09e0af1237806ee54f25089cddbd9c5fcd5bf0dd726dc4643e2"
+    },
+    {
+      "name": "multiplayer_3",
+      "start": "0x80193200",
+      "size": "0x860",
+      "sha256": "932a193b7fe14c6464b415cfc60d2b1d006dbf93e91fabf46dacdf5e8c759e44"
+    },
+    {
+      "name": "multiplayer_4",
+      "start": "0x80193A80",
+      "size": "0x140",
+      "sha256": "700096d059f08436ffcc2abc8179dd4077c541136df7eee043ca587a934f4640"
+    },
+    {
+      "name": "multiplayer_5",
+      "start": "0x80195D60",
+      "size": "0xE0",
+      "sha256": "3705164e20482b0fc24acbdc99211f830b6db9fc6fd495b5a0122fe56ec2b9b4"
+    },
+    {
+      "name": "multiplayer_6",
+      "start": "0x80195F60",
+      "size": "0x460",
+      "sha256": "433dd8b16ca6c2d5def547a9aa35b04e02560a5a0e0e1c312a111747f2e158e0"
+    },
+    {
+      "name": "multiplayer_7",
+      "start": "0x801963E0",
+      "size": "0x140",
+      "sha256": "0c3a91ced5a8297f41e9d0231641f5a5195b7d7e32f46303f26cec73f2f17256"
+    },
+    {
+      "name": "multiplayer_8",
+      "start": "0x80196540",
+      "size": "0x1420",
+      "sha256": "de5c9bb3e913d7a27da95c076e06b822323940b40411bd2e968c53d3b76efd7e"
+    },
+    {
+      "name": "multiplayer_9",
+      "start": "0x80215960",
+      "size": "0x40",
+      "sha256": "dd3246f0227e6f7794a39bcf240fb1940922eb5c2642675aab87ece06ff0f993"
+    },
+    {
+      "name": "multiplayer_10",
+      "start": "0x802221C0",
+      "size": "0x520",
+      "sha256": "02660415753b62a0a87b77d16e246ddec906a09953bef699624ad40745d0eb08"
+    },
+    {
+      "name": "multiplayer_11",
+      "start": "0x80222700",
+      "size": "0x20",
+      "sha256": "6f4810785a89f72ce4c444b6856651a87fea475b4f4d5ce1ff23cb9071ec87f2"
+    },
+    {
+      "name": "multiplayer_12",
+      "start": "0x80222740",
+      "size": "0x680",
+      "sha256": "cd172094bd6aac83163f0f7f261b0fc2e67221af83b03ba762743eb6a4c51ba4"
+    },
+    {
+      "name": "multiplayer_13",
+      "start": "0x80222DE0",
+      "size": "0xE0",
+      "sha256": "de6faca87b2667dd791b6967c1b85aa73b5d14bb7959cc7a4f813b916b4edc21"
+    },
+    {
+      "name": "quit_screen_1",
+      "start": "0x800E0FC0",
+      "size": "0x1C0",
+      "sha256": "acc5a00abf3e40abdbaffe4369327b13ac6e666c9fa253b6182e9bb87bea67fc"
+    },
+    {
+      "name": "quit_screen_2",
+      "start": "0x8015DA00",
+      "size": "0x20",
+      "sha256": "71c9a7532fc842140582b9471f1cd268f5f54406efa9526b2f9a483855a08f21"
+    },
+    {
+      "name": "quit_screen_3",
+      "start": "0x80243EE0",
+      "size": "0xAE0",
+      "sha256": "0bb3c3fe5c5b2e0191b8d74509c8abcb3cdba567c3985656b3bcf91b5d5817b9"
+    },
+    {
+      "name": "quit_screen_4",
+      "start": "0x802449E0",
+      "size": "0x80",
+      "sha256": "06417358cf73c15cc38bc33734a2573b820c0b79b762049f5afd36bc77e73e5e"
+    },
+    {
+      "name": "quit_screen_5",
+      "start": "0x80244A80",
+      "size": "0x1C0",
+      "sha256": "8a8ce5c321a2ed9eea6bd59ce7fd55d8fe6df8ce31d0ad24c5ce980819fd1c6a"
+    },
+    {
+      "name": "quit_screen_6",
+      "start": "0x80244C60",
+      "size": "0x240",
+      "sha256": "a72b67003616c33c954a5873dc39d6d0adc70843f79375bde85ecda675ba6d61"
+    },
+    {
+      "name": "quit_screen_7",
+      "start": "0x80244EC0",
+      "size": "0xA0",
+      "sha256": "f246f49de4c2c9f0d7a80b83976ca331dda88f066bcfff28f3f3e13598ed5bd3"
+    },
+    {
+      "name": "results_screen_1",
+      "start": "0x80235E20",
+      "size": "0x1840",
+      "sha256": "8d70f0bfbf924e1999e801967c3644b3746906f02a6b25d5e78e808bc98fb6ef"
+    },
+    {
+      "name": "results_screen_2",
+      "start": "0x80237680",
+      "size": "0x2220",
+      "sha256": "a03097e718d83d39761515f282b0112d80a43f83b0b5d1d5399baf8ee9fe4ae8"
+    }
+  ],
+  "protected_ranges": [
+    {
+      "start": "0x80190420",
+      "size": "0xD0",
+      "reason": "gallery availability query and return stub"
+    },
+    {
+      "start": "0x8037333C",
+      "size": "0x3C",
+      "reason": "OSLinkFixed hook entry"
+    },
+    {
+      "start": "0x80193A70",
+      "size": "0x4",
+      "reason": "Deathmatch constructor trap"
+    },
+    {
+      "start": "0x801963D8",
+      "size": "0x4",
+      "reason": "Coin constructor trap"
+    },
+    {
+      "start": "0x80222DD8",
+      "size": "0x4",
+      "reason": "Multiplayer GUI constructor trap"
+    },
+    {
+      "start": "0x80222724",
+      "size": "0x4",
+      "reason": "Multiplayer GUI Update trap"
+    },
+    {
+      "start": "0x802226F0",
+      "size": "0x4",
+      "reason": "Multiplayer GUI Draw trap"
+    },
+    {
+      "start": "0x80244EA4",
+      "size": "0x4",
+      "reason": "Multiplayer quit-screen quit_constructor gate"
+    },
+    {
+      "start": "0x800E0FAC",
+      "size": "0xC",
+      "reason": "Multiplayer quit-screen quit_destructor gate"
+    },
+    {
+      "start": "0x802449D4",
+      "size": "0x4",
+      "reason": "Multiplayer quit-screen quit_draw gate"
+    },
+    {
+      "start": "0x80244A68",
+      "size": "0x4",
+      "reason": "Multiplayer quit-screen quit_update gate"
+    },
+    {
+      "start": "0x80244C44",
+      "size": "0x4",
+      "reason": "Multiplayer quit-screen quit_input gate"
+    },
+    {
+      "start": "0x80223AC0",
+      "size": "0x4",
+      "reason": "Multiplayer quit-screen quit_create_skip gate"
+    },
+    {
+      "start": "0x80237678",
+      "size": "0x4",
+      "reason": "Multiplayer results-screen constructor gate"
+    }
+  ]
+}

@@ -35,7 +35,12 @@ endif ()
 message(${CMAKE_CXX_FLAGS})
 
 set(SOURCE_FILES
+        src/ModuleRemovalHooks.cpp
+        src/ModuleRemovalHooks.hpp
+        src/GalleryRemoval.hpp
+        src/MultiplayerRemoval.hpp
         src/GalleryRemoval.cpp
+        src/MultiplayerRemoval.cpp
         src/include/OSModule.hpp
         src/include/PrimeAPI.h
 

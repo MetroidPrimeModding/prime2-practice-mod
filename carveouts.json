@@ -11,8 +11,15 @@
     ".text._prolog*",
     ".text._earlyboot_memset*"
   ],
-  "carveouts": [],
-  "reclamation_manifest": "PrimeAPI2/gallery_reclamation.json",
+  "carveouts": [
+    {
+      "name": "camera_managers_1_3",
+      "start": "0x803C7848",
+      "size": "0x2EF8",
+      "priority": 0
+    }
+  ],
+  "reclamation_manifest": "PrimeAPI2/code_reclamation.json",
   "stomps": [
     {
       "name": "gallery_1",
@@ -38,6 +45,116 @@
       "name": "gallery_5",
       "start": "0x80191540",
       "size": "0x160"
+    },
+    {
+      "name": "multiplayer_1",
+      "start": "0x80019E20",
+      "size": "0x20"
+    },
+    {
+      "name": "multiplayer_2",
+      "start": "0x80084B80",
+      "size": "0x20"
+    },
+    {
+      "name": "multiplayer_3",
+      "start": "0x80193200",
+      "size": "0x860"
+    },
+    {
+      "name": "multiplayer_4",
+      "start": "0x80193A80",
+      "size": "0x140"
+    },
+    {
+      "name": "multiplayer_5",
+      "start": "0x80195D60",
+      "size": "0xE0"
+    },
+    {
+      "name": "multiplayer_6",
+      "start": "0x80195F60",
+      "size": "0x460"
+    },
+    {
+      "name": "multiplayer_7",
+      "start": "0x801963E0",
+      "size": "0x140"
+    },
+    {
+      "name": "multiplayer_8",
+      "start": "0x80196540",
+      "size": "0x1420"
+    },
+    {
+      "name": "multiplayer_9",
+      "start": "0x80215960",
+      "size": "0x40"
+    },
+    {
+      "name": "multiplayer_10",
+      "start": "0x802221C0",
+      "size": "0x520"
+    },
+    {
+      "name": "multiplayer_11",
+      "start": "0x80222700",
+      "size": "0x20"
+    },
+    {
+      "name": "multiplayer_12",
+      "start": "0x80222740",
+      "size": "0x680"
+    },
+    {
+      "name": "multiplayer_13",
+      "start": "0x80222DE0",
+      "size": "0xE0"
+    },
+    {
+      "name": "quit_screen_1",
+      "start": "0x800E0FC0",
+      "size": "0x1C0"
+    },
+    {
+      "name": "quit_screen_2",
+      "start": "0x8015DA00",
+      "size": "0x20"
+    },
+    {
+      "name": "quit_screen_3",
+      "start": "0x80243EE0",
+      "size": "0xAE0"
+    },
+    {
+      "name": "quit_screen_4",
+      "start": "0x802449E0",
+      "size": "0x80"
+    },
+    {
+      "name": "quit_screen_5",
+      "start": "0x80244A80",
+      "size": "0x1C0"
+    },
+    {
+      "name": "quit_screen_6",
+      "start": "0x80244C60",
+      "size": "0x240"
+    },
+    {
+      "name": "quit_screen_7",
+      "start": "0x80244EC0",
+      "size": "0xA0"
+    },
+    {
+      "name": "results_screen_1",
+      "start": "0x80235E20",
+      "size": "0x1840"
+    },
+    {
+      "name": "results_screen_2",
+      "start": "0x80237680",
+      "size": "0x2220"
     }
   ]
 }
