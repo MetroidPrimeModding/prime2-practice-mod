@@ -34,6 +34,7 @@ jobs:
           mkdir out
           cp cmake-build-release-docker/prime2-practice out/prime2-practice.elf
           cp cmake-build-release-docker/prime2-practice.map out/prime2-practice.map
+          cp cmake-build-release-docker/packed.txt out/packed.txt
 
       - name: Name artifact
         id: name
@@ -46,4 +47,5 @@ jobs:
           path: |
             out/prime2-practice.elf
             out/prime2-practice.map
+            out/packed.txt
           if-no-files-found: error

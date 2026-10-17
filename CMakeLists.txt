@@ -150,6 +150,7 @@ set(SOURCE_FILES
 add_gc_static_binary(prime2-practice src/prime-practice.lst
         src/patcher_config.toml
         src/opening_practice.bnr
+        carveouts.json
         ${SOURCE_FILES})
 
 # Keep direct container CMake invocations consistent with build.sh.

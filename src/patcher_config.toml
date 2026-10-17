@@ -12,3 +12,9 @@ output_name_dol = "default_mod.dol"
 # Symbol name of the place to jump *from* to entry point of the mod
 entry_point_symbol = "PPCSetFpIEEEMode"
 truncate_files = ["Video/Attract02_32.thp"]
+
+# G2ME01 __init_data BSS-table memset call, before OSInit and _prolog.
+[[branch_patches]]
+branch_from_symbol = "_PATCH_EARLYBOOT_MEMSET"
+to_symbol = "_earlyboot_memset"
+link = true

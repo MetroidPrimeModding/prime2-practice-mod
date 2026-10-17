@@ -1,4 +1,5 @@
 #include "PracticeMod.hpp"
+#include "carveouts.h"
 #include "utils/ReplaceFunction.hpp"
 #include <os.h>
 
@@ -8,9 +9,30 @@ class CPlayer;
 extern "C" {
 #pragma clang attribute push(__attribute__((section(".boot"))), apply_to = function)
 __attribute__((visibility("default"))) extern void _prolog();
-[[maybe_unused]] __attribute__((visibility("default"))) extern void _earlyboot_memset(void *dst, char val, u32 size);
+__attribute__((used, retain, visibility("default"))) extern void *_earlyboot_memset(void *dst, int val, u32 size);
 #pragma clang attribute pop
 void *memcpy(void *dest, const void *src, size_t count);
+}
+
+// Called from __init_data before OSInit, constructors, allocation, or hooks are available.
+// Use volatile stores so LLVM cannot turn this loop into a call to a later runtime helper.
+void *_earlyboot_memset(void *dst, int val, u32 size) {
+  u32 cursor = reinterpret_cast<u32>(dst);
+  const u32 end = cursor + size;
+  for (u32 i = 0; i < sizeof(CARVEOUT_SAFE_BLOCKS) / sizeof(u32); i += 2) {
+    const u32 start = CARVEOUT_SAFE_BLOCKS[i];
+    const u32 stop = start + CARVEOUT_SAFE_BLOCKS[i + 1];
+    if (stop <= cursor) continue;
+    if (start >= end) break;
+    while (cursor < start && cursor < end) {
+      *reinterpret_cast<volatile unsigned char *>(cursor++) = static_cast<unsigned char>(val);
+    }
+    cursor = stop < end ? stop : end;
+  }
+  while (cursor < end) {
+    *reinterpret_cast<volatile unsigned char *>(cursor++) = static_cast<unsigned char>(val);
+  }
+  return dst;
 }
 
 struct ForceStaticInit {
@@ -48,6 +70,8 @@ void runStaticInitializers() {
 }
 
 void _prolog() {
+  // Preserve G2ME01 PPCSetFpIEEEMode, including repeated calls.
+  asm volatile("mtfsb0 29");
   // check to see if we have hooked OSSystemReset
   u32 orig = *(u32 *)&OSResetSystem;
   if (initialized && orig == 0x7c0802a6) { // original instruction: mflr r0
@@ -59,16 +83,14 @@ void _prolog() {
     return;
   }
   initialized = true;
-  // this is the only thing in the function we replace
-  asm volatile("mtfsb0 5");
   runStaticInitializers();
   PracticeMod::ClearInstance();
   Hook_OSResetSystem::InstallAtFuncPtr(&OSResetSystem);
   InstallHooks();
 
-  #ifdef RANDOMIZER
+#ifdef RANDOMIZER
   InstallRandomizerHooks();
-  #endif
+#endif
 }
 
 // void resetLayerStates(const CStateManager &manager) {

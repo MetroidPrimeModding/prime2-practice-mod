@@ -1,0 +1,15 @@
+{
+  "dol_profile": "PrimeAPI2/G2ME01.json",
+  "reserve_bytes": 0,
+  "pack_input_sections": [
+    ".text.*",
+    ".rodata.*"
+  ],
+  "never_pack": [
+    ".boot*",
+    ".init*",
+    ".text._prolog*",
+    ".text._earlyboot_memset*"
+  ],
+  "carveouts": []
+}
