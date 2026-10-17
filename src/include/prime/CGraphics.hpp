@@ -6,6 +6,8 @@
 
 typedef struct {} CTevPass;
 
+enum ERglTevStage { kTS_Stage0 = 0 };
+
 enum ERglCullMode { ERglCullMode_None = 0, ERglCullMode_Front = 1, ERglCullMode_Back = 2, ERglCullMode_All = 3 };
 
 enum ERglPrimitive {
@@ -69,7 +71,7 @@ public:
   static void SetAlphaCompare(ERglAlphaFunc func0, u8 ref0, ERglAlphaOp op, ERglAlphaFunc func1, u8 ref1);
   static void DisableAllLights();
   static void SetTevStates(int i);
-  static void SetTevOp(_GXTevOp, CTevPass*);
+  static void SetTevOp(ERglTevStage, const CTevPass &);
 };
 
 class CGX {
@@ -95,8 +97,9 @@ public:
 class CTexture {
 private:
 public:
+  enum EClampMode { kCM_Clamp, kCM_Repeat, kCM_Mirror };
   static void InvalidateTexmap(int texMapId);
-  void LoadMipLevel(int param1, int param2);
+  void Load(_GXTexMapID texMapId, EClampMode clampMode) const;
 };
 
 extern CTevPass g_tevPass_80416c2c;

@@ -4,12 +4,26 @@
 #include "os.h"
 #include "types.h"
 #include <functional>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <type_traits>
 
 template <typename T>
 constexpr bool is_captureless_lambda = std::is_function_v<std::remove_pointer_t<decltype(+std::declval<T>())>>;
+
+// Member hooks receive this explicitly. Reject callbacks with different argument or return types.
+template <typename T>
+struct HookCallbackType {
+  using type = T;
+};
+template <typename R, typename C, typename... Args>
+struct HookCallbackType<R (C::*)(Args...)> {
+  using type = R (*)(C *, Args...);
+};
+template <typename R, typename C, typename... Args>
+struct HookCallbackType<R (C::*)(Args...) const> {
+  using type = R (*)(const C *, Args...);
+};
 
 // trampoline pool
 namespace ReplaceFunctionHookPool {
@@ -48,7 +62,7 @@ namespace ReplaceFunctionHookPool {
   static_assert(!std::is_member_function_pointer_v<CallbackFuncPtr<>>, "Callback method must be static!")
 
 template <typename T>
-const char* PrettyName() {
+const char *PrettyName() {
   return __PRETTY_FUNCTION__;
 }
 
@@ -60,6 +74,7 @@ private:
   constexpr static char suffix[] = "]";
   constexpr static size_t prefixLen = sizeof(prefix) - 1;
   constexpr static size_t suffixLen = sizeof(suffix) - 1;
+
 public:
   char c_str[128]{};
   TypeName() {
@@ -73,10 +88,9 @@ public:
   }
 #else
 public:
-  constexpr static const char* c_str = "Unk";
+  constexpr static const char *c_str = "Unk";
 #endif
 };
-
 
 template <typename Derived>
 class ReplacementHook {
@@ -107,6 +121,8 @@ public:
   template <typename T>
   static ALWAYS_INLINE void InstallAtFuncPtr(T ptr) {
     _REPLACE_STATIC_CALLBACK_ASSERT();
+    static_assert(std::is_same_v<typename HookCallbackType<T>::type, CallbackFuncPtr<>>,
+                  "Hook callback must match the game's declared signature, including this and return type");
     TypeName<Derived> typeName;
     OrigRef() = ReplaceFunctionHookPool::InstallAtFn(typeName.c_str, ptr, &Derived::Callback);
   }

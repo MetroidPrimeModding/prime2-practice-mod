@@ -4,6 +4,9 @@
 
 RSTL_BEGIN
 
+// Opaque game ownership wrapper; references can be passed without constructing or copying it.
+template <typename T> class ncrc_ptr;
+
 /** Reference counting pointer. Needs to be fixed so it actually counts references */
 template <typename T> class rc_ptr {
 public:

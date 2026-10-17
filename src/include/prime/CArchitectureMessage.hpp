@@ -55,8 +55,11 @@ struct CArchMsgParmReal32 : IArchMsgParm {
 struct CArchMsgParmUserInput : IArchMsgParm {
 private:
   CFinalInput x4_parm;
+
 public:
-  CFinalInput *GetInput() { return &x4_parm; }
+  const CFinalInput *GetInput() const {
+    return &x4_parm;
+  }
 };
 
 struct CArchMsgParmControllerStatus : IArchMsgParm {
@@ -68,7 +71,14 @@ class CArchitectureMessage {
 public:
   EArchMsgTarget x0_target;
   EArchMsgType x4_type;
-  rstl::rc_ptr<IArchMsgParm> x8_parm;
+  // Read-only view of Echoes' rc_ptr: object pointer, then separate reference-count pointer.
+  // The local rstl::rc_ptr placeholder has a different layout and must not be embedded here.
+  const IArchMsgParm *x8_parm;
+  int *xc_refCount;
 
-  IArchMsgParm *GetParm() const;
+  const IArchMsgParm *GetParm() const {
+    return x8_parm;
+  }
 };
+
+static_assert(sizeof(CArchitectureMessage) == 0x10, "Echoes architecture message ABI");

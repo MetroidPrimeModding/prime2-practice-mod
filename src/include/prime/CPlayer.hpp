@@ -14,7 +14,7 @@ public:
   };
   void Teleport(const CTransform4f &newTransform, CStateManager &, bool resetBallCam);
 
-  void ProcessInput(double dt, CFinalInput *input, CStateManager *mgr);
+  void ProcessInput(const CFinalInput &input, CStateManager &mgr);
   // CCameraBobber *getCameraBobber() { return *GetField<CCameraBobber *>(this, 0x76C); }
   // CPlayerGun *getPlayerGun() { return *GetField<CPlayerGun *>(this, 0x490); }
   // float *getDepthUnderWater() { return GetField<float>(this, 0x828); }

@@ -1,15 +1,15 @@
 #pragma once
 #include <gctypes.h>
 
-using EWhichMovie = u32;
+using EWhichMovie = int;
 
 class CPlayMovie {
 public:
   // can't hook a constructor directly, but this has the same sig
-  void CPlayMovieConstructor(EWhichMovie movie);
+  CPlayMovie *CPlayMovieConstructor(EWhichMovie movie);
 };
 
 class CMoviePlayer {
 public:
-  void CMoviePlayerConstructor(char *path, double preloadSeconds, int loop, int deinterlace);
+  CMoviePlayer *CMoviePlayerConstructor(const char *path, float preloadSeconds, bool loop, bool deinterlace);
 };

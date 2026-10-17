@@ -4,94 +4,69 @@
 
 RSTL_BEGIN
 
-class rmemory_allocator;
-template <typename t> class char_traits;
+class rmemory_allocator {};
+template <typename t>
+class char_traits;
 
-template <typename _CharTp, typename traits, typename allocator> class basic_string {
+// G2ME01 constructors and release (see prime-practice.lst) own allocation and reference counts.
+// Character data follows the eight-byte control block inline. Only char and char16_t are bound.
+template <typename _CharTp, typename traits, typename allocator>
+class basic_string {
   struct COWData {
     u32 x0_capacity;
     u32 x4_refCount;
-    _CharTp *x8_data;
+    _CharTp x8_data[];
   };
+
+  static_assert(sizeof(COWData) == 8, "Game string data follows its eight-byte control block");
 
   const _CharTp *x0_ptr;
   COWData *x4_cow;
   u32 x8_size;
+  u32 xc_allocator; // Echoes MWCC allocator slot and padding; game objects reserve 0x10 bytes per string
 
-  void internal_allocate(int size) {
-    x4_cow = reinterpret_cast<COWData *>(new u8[size * sizeof(_CharTp) + 8]);
-    x0_ptr = x4_cow->x8_data;
-    x4_cow->x0_capacity = u32(size);
-    x4_cow->x4_refCount = 1;
-  }
-
-  static const _CharTp _EmptyString;
+  void internal_dereference();
 
 public:
   struct literal_t {};
 
-  basic_string(literal_t, const _CharTp *data) {
-    x0_ptr = data;
-    x4_cow = nullptr;
-
-    const _CharTp *it = data;
-    while (*it) {
-      ++it;
-    }
-
-    x8_size = u32((it - data) / sizeof(_CharTp));
-  }
-
-  basic_string(const basic_string &str) {
-    x0_ptr = str.x0_ptr;
-    x4_cow = str.x4_cow;
-    x8_size = str.x8_size;
-    if (x4_cow) {
-      ++x4_cow->x4_refCount;
+  // No copy: x0_ptr points straight at data, which must outlive every copy (including ones the game keeps)
+  basic_string(literal_t, const _CharTp *data) : x0_ptr(data), x4_cow(nullptr), x8_size(0), xc_allocator(0) {
+    while (data[x8_size]) {
+      ++x8_size;
     }
   }
 
-  basic_string(const _CharTp *data, int size) {
-    if (size <= 0 && !data) {
-      x0_ptr = &_EmptyString;
-      x4_cow = nullptr;
-      x8_size = 0;
-      return;
-    }
-
-    const _CharTp *it = data;
-    u32 len = 0;
-    while (*it) {
-      if (size != -1 && len >= size) {
-        break;
-      }
-      ++it;
-      ++len;
-    }
-
-    internal_allocate(len + 1);
-    x8_size = len;
-    for (int i = 0; i < len; ++i) {
-      x4_cow->x8_data[i] = data[i];
-    }
-    x4_cow->x8_data[len] = 0;
-  }
-
+  // size == -1 copies up to the terminator
+  basic_string(const _CharTp *data, int size = -1, const allocator &alloc = allocator());
+  basic_string(const basic_string &str);
   ~basic_string() {
-    if (x4_cow && --x4_cow->x4_refCount == 0) {
-      delete[] x4_cow;
-    }
+    internal_dereference();
+  }
+
+  basic_string &operator=(const basic_string &) = delete;
+
+  const _CharTp *data() const {
+    return x0_ptr;
+  }
+  u32 size() const {
+    return x8_size;
   }
 };
 
-template <> const char basic_string<char, char_traits<char>, rmemory_allocator>::_EmptyString = 0;
-template <> const wchar_t basic_string<wchar_t, char_traits<wchar_t>, rmemory_allocator>::_EmptyString = 0;
-
-typedef basic_string<wchar_t, char_traits<wchar_t>, rmemory_allocator> wstring;
+typedef basic_string<char16_t, char_traits<char16_t>, rmemory_allocator> wstring;
 typedef basic_string<char, char_traits<char>, rmemory_allocator> string;
 
-inline wstring wstring_l(const wchar_t *data) { return wstring(wstring::literal_t(), data); }
+inline wstring wstring_l(const char16_t *data) {
+  return wstring(wstring::literal_t(), data);
+}
 
-inline string string_l(const char *data) { return string(string::literal_t(), data); }
+inline string string_l(const char *data) {
+  return string(string::literal_t(), data);
+}
+
+static_assert(sizeof(char16_t) == 2, "Game wide characters must be two bytes");
+static_assert(sizeof(string) == 0x10, "Game strings reserve the allocator slot");
+static_assert(sizeof(wstring) == 0x10, "Game wide strings reserve the allocator slot");
 
 RSTL_END

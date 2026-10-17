@@ -13,24 +13,24 @@ bool g_pickupMapIconToken_wasEverInitialized = false;
 bool g_pickupMapIconToken_isInitialized = false;
 
 DECLARE_FUNCTION_REPLACEMENT(CStateManager_CStateManager) {
-  static void Callback(
+  static CStateManager *Callback(
     CStateManager* self,
-    rstl::rc_ptr<void>* relayTracker,
-    rstl::rc_ptr<void>* areaAssetIdA,
-    int param4,
-    rstl::rc_ptr<void>* areaAssetIdB,
-    rstl::rc_ptr<void>* worldState0x1c
+    const rstl::ncrc_ptr<CScriptMailbox> &mailbox,
+    const rstl::ncrc_ptr<CMapWorldInfo> &mapInfo,
+    const rstl::reserved_vector<rstl::ncrc_ptr<CPlayerState>, 4> &playerStates,
+    const rstl::ncrc_ptr<CWorldTransManager> &worldTrans,
+    const rstl::ncrc_ptr<CWorldLayerState> &worldLayers
   ) {
     // reset the CToken every time a new CStateManager is constructed
     if (g_pickupMapIconToken_isInitialized) {
       g_pickupMapIconToken_isInitialized = false;
     }
-    Orig(self, relayTracker, areaAssetIdA, param4, areaAssetIdB, worldState0x1c);
+    return Orig(self, mailbox, mapInfo, playerStates, worldTrans, worldLayers);
   }
 };
 
 DECLARE_FUNCTION_REPLACEMENT(CMappableObject_Draw) {
-  static void Callback(CMappableObject* self, u32 curArea, const CMapWorldInfo& mwInfo, float alpha, bool needsVtxLoad) {
+  static void Callback(const CMappableObject* self, int curArea, const CMapWorldInfo& mwInfo, float alpha, bool needsVtxLoad) {
     if (!g_pickupMapIconToken_isInitialized) {
       // get a new CToken for this lifetime
       const CAssetId PICKUP_MAP_ICON_TEXTURE = 0x3dcbaca5u;
@@ -56,8 +56,8 @@ DECLARE_FUNCTION_REPLACEMENT(CMappableObject_Draw) {
       // render custom pickup icon
       if (!mwInfo.IsObjectUnmapped(self->getEditorId())) {
         auto iconTexture = (CTexture*) g_pickupMapIconToken.GetObj()->GetContents();
-        iconTexture->LoadMipLevel(0, 1);
-        CGraphics::SetTevOp(GxTevOp_ADD, &g_tevPass_80416c2c);
+        iconTexture->Load(GXTexMap0, CTexture::kCM_Repeat);
+        CGraphics::SetTevOp(kTS_Stage0, g_tevPass_80416c2c);
         CGraphics::StreamBegin(ERglPrimitive_TRIANGLESTRIP);
         CGraphics::StreamColor(0xFFFFFFFF);
         CGraphics::StreamTexcoord(0.0, 1.0);

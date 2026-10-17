@@ -19,9 +19,13 @@
 
 #define PAD_MAX_CONTROLLERS 4
 
+extern "C" u32 _PATCH_ASSERT_WAIT;
+
 PracticeMod::PracticeMod() {
-  // This will cause the crash screen to appear every time
-  *((u32 *) 0x8028c604) = 0x60000000;
+  // G2ME01 production exception handler: bypass the controller-unlock loop before showing the crash screen.
+  _PATCH_ASSERT_WAIT = 0x60000000;
+  DCFlushRange(&_PATCH_ASSERT_WAIT, sizeof(_PATCH_ASSERT_WAIT));
+  ICInvalidateRange(&_PATCH_ASSERT_WAIT, sizeof(_PATCH_ASSERT_WAIT));
 
   ImGuiEngine::ImGui_Init();
   ImGuiEngine::ImGui_Init_Style();
@@ -137,7 +141,7 @@ void PracticeMod::renderMenu() {
         ImGui::TreePop();
       }
       if (ImGui::TreeNode("Discord")) {
-        GUI::drawQRCode("https://discord.gg/m4UreBdq9V", 3.0f);
+        GUI::drawQRCode("https://discord.gg/ff5rad7n3n", 3.0f);
         ImGui::TreePop();
       }
       ImGui::TreePop();

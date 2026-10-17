@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GetField.hpp"
 #include "CMapWorldInfo.hpp"
+#include "GetField.hpp"
 
 typedef enum EMappableObjectType {
   // door types
@@ -13,7 +13,7 @@ typedef enum EMappableObjectType {
   EMappableObjectType_SuperMissileDoor,
   EMappableObjectType_SeekerMissileDoor,
   EMappableObjectType_PowerBombDoor,
-  
+
   // regular icon types
   EMappableObjectType_Elevator = 0x10,
   EMappableObjectType_SaveStation,
@@ -29,8 +29,12 @@ typedef enum EMappableObjectType {
 
 class CMappableObject {
 public:
-  void Draw(u32 curArea, const CMapWorldInfo& mwInfo, float alpha, bool needsVtxLoad);
+  void Draw(int curArea, const CMapWorldInfo &mwInfo, float alpha, bool needsVtxLoad) const;
 
-  inline EMappableObjectType *getMappableObjectType() { return GetField<EMappableObjectType>(this, 0x0); }
-  inline u32 *getEditorId() { return GetField<uint>(this, 0x8); }
+  inline const EMappableObjectType *getMappableObjectType() const {
+    return GetField<EMappableObjectType>(this, 0x0);
+  }
+  inline const u32 *getEditorId() const {
+    return GetField<uint>(this, 0x8);
+  }
 };

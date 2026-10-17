@@ -30,14 +30,7 @@ public:
   inline T *data() const { return ptr; }
 };
 
-template <typename T> class reserved_vector {
-public:
-  int32 len;
-  T *first;
-  T *end;
-  T *last;
-
-public:
-};
+// Opaque until an inline-storage implementation is needed and verified against Echoes.
+template <typename T, int N> class reserved_vector;
 
 RSTL_END

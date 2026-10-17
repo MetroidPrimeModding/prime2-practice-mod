@@ -202,7 +202,7 @@ public:
 
   bool HasPowerUp(CPlayerState::EItemType) const;
   uint GetItemCapacity(CPlayerState::EItemType) const;
-  uint GetItemAmount(CPlayerState::EItemType) const;
+  int GetItemAmount(CPlayerState::EItemType, bool respectFieldToQuery = true) const;
   void DecrPickUp(CPlayerState::EItemType, int);
   void IncrPickUp(CPlayerState::EItemType, int);
   void AddPowerUp(CPlayerState::EItemType, int);

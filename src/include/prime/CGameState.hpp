@@ -13,6 +13,8 @@ public:
   CAssetId CurrentWorldAssetId();
   CWorldState &StateForWorld(unsigned int world);
   CWorldState &CurrentWorldState();
+  // Bridge for PlayerState(int): returns the address of an ncrc_ptr, whose first word is the player pointer.
+  // Do not use this view to copy, assign or release the game's ownership wrapper.
   CPlayerState **GetPlayerState(int idx);
   // inline CAssetId MLVL() { return *GetField<u32>(this, 0x84); };
   inline double PlayTime() { return *GetField<double>(this, 0x48); }

@@ -6,6 +6,8 @@
 #include "prime/CPlayMovie.hpp"
 #include "prime/CPlayer.hpp"
 #include "prime/CStateManager.hpp"
+#include "prime/CStringTable.hpp"
+#include "version.h"
 #include "utils/ReplaceFunction.hpp"
 #include <prime/CRandom16.hpp>
 #include <settings.hpp>
@@ -18,6 +20,19 @@
 //     Orig();
 //   }
 // };
+
+// CStringTable::GetString
+DECLARE_FUNCTION_REPLACEMENT(CStringTable_GetString) {
+  static const char16_t *Callback(const CStringTable *self, int idx) {
+    // FrontEnd.pak STRG 98E7E268: identify the menu by its language-independent keys.
+    // Do not cache the table pointer: resources can be unloaded between menu visits.
+    if (idx == 2 && self->GetStringIndex("MainMenu") == 0 && self->GetStringIndex("SinglePlayer") == 1 &&
+        self->GetStringIndex("Multiplayer") == 2) {
+      return u"Practice Mod v" MOD_VERSION;
+    }
+    return Orig(self, idx);
+  }
+};
 
 // CGraphics::EndScene
 DECLARE_FUNCTION_REPLACEMENT(CGraphics_EndScene) {
@@ -32,8 +47,8 @@ DECLARE_FUNCTION_REPLACEMENT(CGraphics_EndScene) {
 DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
   static CIOWin::EMessageReturn Callback(CMainFlow *thiz, const CArchitectureMessage &msg, CArchitectureQueue &queue) {
     if (msg.x4_type == EArchMsgType_UserInput) {
-      CArchMsgParmUserInput *status = (CArchMsgParmUserInput *)(msg.GetParm());
-      CFinalInput *input = status->GetInput();
+      const CArchMsgParmUserInput *status = static_cast<const CArchMsgParmUserInput *>(msg.GetParm());
+      const CFinalInput *input = status->GetInput();
 
       // The mod 4 is just for safety
       memcpy(&PracticeMod::GetInstance()->inputs[input->ControllerIdx() % 4],
@@ -51,14 +66,14 @@ DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
 
 // CPlayer::ProcessInput
 DECLARE_FUNCTION_REPLACEMENT(CPlayer_ProcessInput) {
-  static void Callback(CPlayer *self, double dt, CFinalInput *input, CStateManager *mgr) {
-    Orig(self, dt, input, mgr);
+  static void Callback(CPlayer *self, const CFinalInput &input, CStateManager &mgr) {
+    Orig(self, input, mgr);
     PracticeMod::GetInstance()->handlePosLoadIfNeeded(self);
   }
 };
 
-DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessInput) {
-  static void Callback(CPauseScreen *self, CFinalInput &input) {
+DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessControllerInput) {
+  static void Callback(CPauseScreen *self, const CFinalInput &input) {
     if (self->GetState() != CPauseScreen::EPauseScreenState::EState_Active) {
       Orig(self, input);
       return;
@@ -85,25 +100,23 @@ DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessInput) {
 DECLARE_FUNCTION_REPLACEMENT(CRandom16_Next) {
   static s32 Callback(CRandom16* rng) {
     if (!SETTINGS.RNG_lockSeed) {
-      rng->m_seed = (rng->m_seed * 0x41c64e6d) + 0x00003039;
+      rng->m_seed = static_cast<u32>(rng->m_seed) * 0x41c64e6du + 0x00003039u;
     }
     return (rng->m_seed >> 16) & 0xffff;
   }
 };
 
 DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
-  static void Callback(CMoviePlayer* self, char *path, double preloadSeconds, int loop, int deinterlace) {
+  static CMoviePlayer *Callback(CMoviePlayer* self, const char *path, float preloadSeconds, bool loop, bool deinterlace) {
     OSReport("Playing movie: %s (preloadSeconds=%f loop=%d deinterlace=%d)\n", path, preloadSeconds, loop, deinterlace);
 
     bool isAttract2 = strcmp("Video/Attract02_32.thp", path) == 0;
     if (isAttract2) {
       OSReport("Skipping attract 2, playing 9 instead\n");
-      char newPath[] = "Video/Attract09_31.thp";
-      Orig(self, newPath, preloadSeconds, loop, deinterlace);
-      return;
+      return Orig(self, "Video/Attract09_31.thp", preloadSeconds, loop, deinterlace);
     }
 
-    Orig(self, path, preloadSeconds, loop, deinterlace);
+    return Orig(self, path, preloadSeconds, loop, deinterlace);
   }
 };
 
@@ -131,11 +144,12 @@ DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
 // clang-format on
 
 void InstallHooks() {
+  CStringTable_GetString::InstallAtFuncPtr(&CStringTable::GetString);
   // CMain_DrawDebugMetrics::InstallAtFuncPtr(&CMain::DrawDebugMetrics);
   CGraphics_EndScene::InstallAtFuncPtr(&CGraphics::EndScene);
   CMainFlow_OnMessage::InstallAtFuncPtr(&CMainFlow::OnMessage);
   CPlayer_ProcessInput::InstallAtFuncPtr(&CPlayer::ProcessInput);
-  CPauseScreen_ProcessInput::InstallAtFuncPtr(&CPauseScreen::ProcessInput);
+  CPauseScreen_ProcessControllerInput::InstallAtFuncPtr(&CPauseScreen::ProcessControllerInput);
   CRandom16_Next::InstallAtFuncPtr(&CRandom16::Next);
   CMoviePlayer_constructor::InstallAtFuncPtr(&CMoviePlayer::CMoviePlayerConstructor);
   // CStateManger_SpawnPlayerAtPoint::InstallAtFuncPtr(&CStateManager::SpawnPlayerAtPoint);
