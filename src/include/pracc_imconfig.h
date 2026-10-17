@@ -88,11 +88,7 @@
 // #define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 // #define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
 
-//---- Use stb_printf's faster implementation of vsnprintf instead of the one from libc (unless
-//IMGUI_DISABLE_DEFAULT_FORMAT_FUNCTIONS is defined)
-// Requires 'stb_sprintf.h' to be available in the include path. Compatibility checks of arguments and formats done by
-// clang and GCC will be disabled in order to support the extra formats provided by STB sprintf.
-#define IMGUI_USE_STB_SPRINTF
+// snprintf/vsnprintf wrap the game's MSL formatter in system/format.c.
 
 //---- Use FreeType to build and rasterize the font atlas (instead of stb_truetype which is embedded by default in Dear
 //ImGui)
@@ -164,6 +160,15 @@ namespace ImGui
 
 //--- Disable logging support, we won't be using it
 #define IMGUI_DISABLE_LOG
+
+// Keep the S32/Float widgets used by Echoes; compile out unused scalar variants.
+#define IMGUI_DISABLE_EXTRA_DATA_TYPES
+#define IMGUI_DISABLE_TABLES
+// ImGuiEngine already disables antialiasing for the GX backend.
+#define IMGUI_DISABLE_ANTIALIASING
+#define IMGUI_DISABLE_INI_SETTINGS
+#define IMGUI_USE_FNV1A_HASH
+#define IMGUI_DISABLE_MOUSE_CURSOR
 
 #include "Math/CMath.hpp"
 #include <math.h>

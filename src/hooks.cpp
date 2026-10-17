@@ -6,7 +6,6 @@
 #include "prime/CPlayMovie.hpp"
 #include "prime/CPlayer.hpp"
 #include "prime/CStateManager.hpp"
-#include "stb_sprintf.h"
 #include "utils/ReplaceFunction.hpp"
 #include <prime/CRandom16.hpp>
 #include <settings.hpp>

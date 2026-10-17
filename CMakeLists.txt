@@ -115,6 +115,7 @@ set(SOURCE_FILES
         src/system/ImGuiEngine.cpp
         src/system/ImGuiEngine.hpp
         src/system/libc.c
+        src/system/format.c
 
         src/utils/settings.cpp
         src/utils/ReplaceFunction.hpp

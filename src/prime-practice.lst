@@ -108,3 +108,4 @@
 0x80043aec _ZN13CStateManager18CStateManager_ctorEPN4rstl6rc_ptrIvEES3_iS3_S3_
 0x803013d0 _ZN6CTokenaSERKS_
 0x80301490 _ZN6CToken4LockEv
+0x8034C284 __pformatter

@@ -14,7 +14,7 @@
 #include "prime/CPlayer.hpp"
 #include "prime/CWorld.hpp"
 #include "prime/CWorldState.hpp"
-#include "stb_sprintf.h"
+#include <stdio.h>
 
 namespace GUI {
   void drawFrameTime();
@@ -157,7 +157,7 @@ namespace GUI {
     frames[GRAPH_LENGTH - 1] = ms;
 
     char title[32];
-    stbsp_snprintf(title, sizeof(title), "Frame time: %02.2f", ms);
+    snprintf(title, sizeof(title), "Frame time: %02.2f", ms);
     ImGui::PlotLines("", frames, GRAPH_LENGTH, 0, title, 0.f, 32.f, ImVec2(0, 40.0f));
   }
 

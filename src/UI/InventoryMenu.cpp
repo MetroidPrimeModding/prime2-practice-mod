@@ -183,33 +183,43 @@ namespace GUI {
         refillItems(playerState);
       }
 
-      if (ImGui::BeginTabBar("Items")) {
-        if (ImGui::BeginTabItem("General")) {
+      // A row of buttons avoids linking ImGui's tab-bar implementation.
+      static const char *const ItemTabNames[] = {"General", "Weapons", "Morph Ball", "Keys", "Misc"};
+      static int selectedItemTab = 0;
+      ImGui::Separator();
+      // Keep category buttons distinct from same-named items (e.g. the Morph Ball checkbox).
+      ImGui::PushID("tabs");
+      for (int i = 0; i < int(sizeof(ItemTabNames) / sizeof(ItemTabNames[0])); i++) {
+        if (i > 0) ImGui::SameLine();
+        bool selected = i == selectedItemTab;
+        if (selected) ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_ButtonActive]);
+        if (ImGui::Button(ItemTabNames[i])) selectedItemTab = i;
+        if (selected) ImGui::PopStyleColor();
+      }
+      ImGui::PopID();
+      ImGui::Separator();
+
+      switch (selectedItemTab) {
+        case 0:
           RenderItemType(playerState, GeneralItems[0]); // full width
           RenderItemsDualColumn(playerState, GeneralItems, 1, sizeof(GeneralItems) / sizeof(GeneralItems[0]));
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Weapons")) {
+          break;
+        case 1:
           RenderItemType(playerState, WeaponItems[0]); // full width
           RenderItemsDualColumn(playerState, WeaponItems, 1, sizeof(WeaponItems) / sizeof(WeaponItems[0]));
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Morph Ball")) {
+          break;
+        case 2:
           RenderItemType(playerState, MorphBallItems[0]); // full width
           RenderItemsDualColumn(playerState, MorphBallItems, 1, sizeof(MorphBallItems) / sizeof(MorphBallItems[0]));
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Keys")) {
+          break;
+        case 3:
           ImGui::Text("NOTE: This doesn't affect layers");
           RenderItemsDualColumn(playerState, KeyItems, 0, sizeof(KeyItems) / sizeof(KeyItems[0]));
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Misc")) {
+          break;
+        case 4:
           ImGui::Text("NOTE: This doesn't affect layers");
           RenderItemsDualColumn(playerState, MiscItems, 0, sizeof(MiscItems) / sizeof(MiscItems[0]));
-          ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
+          break;
       }
 
       ImGui::TreePop();
