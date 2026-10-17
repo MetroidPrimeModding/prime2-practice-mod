@@ -27,6 +27,7 @@ This project can produce a release & patch an Echoes iso to be the practice mod
   - There may be others, not a lot of testing has been done yet
   
 ## Controls
+- `D-pad Up` on the room map - Warp to the highlighted room
 - `Z` on pause screen - Open menu
 - `left analog`/`dpad` - Navigate menu
 - `c-stick` - Scroll
@@ -75,6 +76,8 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 - Display the practice mod version in place of the main menu's Multiplayer label.
 - A bunch of minor address fixes from decomp
 - Update the community QR link
+- Map warp (dpad-up)
+- All maps visible by default
 - Memory usage reduced:
   - Remove the image gallery
   - Disable multiplayer

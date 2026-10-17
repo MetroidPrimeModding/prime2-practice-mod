@@ -5,10 +5,18 @@
 #include "types.h"
 
 class CGameArea;
+class IGameArea;
 class CMapWorld;
 
 class IWorld {
 public:
+  // G2ME01 IWorld vtable byte offsets 0x0c, 0x24 and 0x38.
+  CAssetId IGetWorldAssetId() const { return VtableLookup<CAssetId (*)(const IWorld *)>(this, 1)(this); }
+  const IGameArea *IGetAreaAlways(TAreaId id) const {
+    return VtableLookup<const IGameArea *(*)(const IWorld *, TAreaId)>(this, 7)(this, id);
+  }
+  int IGetAreaCount() const { return VtableLookup<int (*)(const IWorld *)>(this, 12)(this); }
+
   //  virtual ~IWorld() = default;
   //  virtual CAssetId IGetWorldAssetId() const = 0;
   //  virtual CAssetId IGetStringTableAssetId() const = 0;

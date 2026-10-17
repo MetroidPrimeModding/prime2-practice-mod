@@ -71,6 +71,11 @@ void PracticeMod::HandleInputs() {
     io->NavInputs[ImGuiNavInput_LStickUp] = inputs[0].ARAUp();
     io->NavInputs[ImGuiNavInput_LStickDown] = inputs[0].ARADown();
 
+  } else if (this->mapActive) {
+    // Map navigation must not accumulate gameplay position hotkeys.
+    upPresses = 0;
+    downPresses = 0;
+    hotkeyInputTimeout = 0;
   } else if (!this->pauseScreenActive) {
     //  warp hotkeys
     if (hotkeyInputTimeout <= 0) {
@@ -166,7 +171,7 @@ void PracticeMod::renderMenu() {
         ImGuiWindowFlags_NoMove |
         ImGuiFocusedFlags_None // just for conveneint commenting in/out
     );
-    ImGui::Text("Press X to warp");
+    ImGui::Text("D-pad Up: warp");
     ImGui::End();
   }
 

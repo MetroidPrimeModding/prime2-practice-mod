@@ -31,6 +31,11 @@ public:
   //  virtual s32 IGetAreaSaveId() const = 0;
   //  virtual std::pair<std::unique_ptr<u8[]>, s32> IGetScriptingMemoryAlways() const = 0;
 
+  // G2ME01 IGameArea vtable byte offset 0x20; works for real and dummy areas.
+  CAssetId IGetAreaAssetId() const {
+    return VtableLookup<CAssetId (*)(const IGameArea *)>(this, 6)(this);
+  }
+
   // inline CAssetId IGetAreaAssetId() { return VtableLookup<CAssetId (*)(IGameArea *)>(this, 6)(this); }
 };
 

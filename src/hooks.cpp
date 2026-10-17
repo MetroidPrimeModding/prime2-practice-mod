@@ -1,4 +1,6 @@
 #include "PracticeMod.hpp"
+#include "prime/CAutoMapper.hpp"
+#include "prime/CGameArea.hpp"
 #include "prime/CFinalInput.hpp"
 #include "prime/CMain.hpp"
 #include "prime/CMainFlow.hpp"
@@ -97,6 +99,44 @@ DECLARE_FUNCTION_REPLACEMENT(CPauseScreen_ProcessControllerInput) {
 };
 // };
 
+// Visibility queries only: leave visited/mapped save data untouched.
+DECLARE_FUNCTION_REPLACEMENT(CMapWorldInfo_IsWorldVisible) {
+  static bool Callback(const CMapWorldInfo *, TAreaId, bool) { return true; }
+};
+DECLARE_FUNCTION_REPLACEMENT(CMapWorldInfo_IsAreaVisible) {
+  static bool Callback(const CMapWorldInfo *, TAreaId) { return true; }
+};
+DECLARE_FUNCTION_REPLACEMENT(CMapArea_GetIsVisibleToAutoMapper) {
+  static bool Callback(const CMapArea *, bool, bool) { return true; }
+};
+
+DECLARE_FUNCTION_REPLACEMENT(CAutoMapper_Draw) {
+  static void Callback(const CAutoMapper *self, const CStateManager &mgr, const CTransform4f &xf, float alpha) {
+    Orig(self, mgr, xf, alpha);
+    PracticeMod::GetInstance()->mapActive = self->IsWorldMap() && self->IsNormalMap();
+  }
+};
+
+DECLARE_FUNCTION_REPLACEMENT(CAutoMapper_ProcessMapScreenInput) {
+  static void Callback(CAutoMapper *self, const CFinalInput &input, CStateManager &mgr) {
+    // The caller already excludes interpolation, hint navigation and pending world loads.
+    // Consume D-pad Up for warping; X keeps retail light/dark map switching.
+    if (input.ControllerIdx() == 0 && input.PDPUp() && self->IsWorldMap() && self->IsNormalMap()) {
+      IWorld *world = self->World();
+      TAreaId areaId = self->FocusArea();
+      if (world && areaId.id >= 0 && areaId.id < world->IGetAreaCount()) {
+        const IGameArea *area = world->IGetAreaAlways(areaId);
+        if (area) {
+          PracticeMod::GetInstance()->mapActive = false;
+          warp(world->IGetWorldAssetId(), area->IGetAreaAssetId());
+        }
+      }
+      return;
+    }
+    Orig(self, input, mgr);
+  }
+};
+
 DECLARE_FUNCTION_REPLACEMENT(CRandom16_Next) {
   static s32 Callback(CRandom16* rng) {
     if (!SETTINGS.RNG_lockSeed) {
@@ -144,6 +184,11 @@ DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
 // clang-format on
 
 void InstallHooks() {
+  CMapWorldInfo_IsWorldVisible::InstallAtFuncPtr(&CMapWorldInfo::IsWorldVisible);
+  CMapWorldInfo_IsAreaVisible::InstallAtFuncPtr(&CMapWorldInfo::IsAreaVisible);
+  CMapArea_GetIsVisibleToAutoMapper::InstallAtFuncPtr(&CMapArea::GetIsVisibleToAutoMapper);
+  CAutoMapper_Draw::InstallAtFuncPtr(&CAutoMapper::Draw);
+  CAutoMapper_ProcessMapScreenInput::InstallAtFuncPtr(&CAutoMapper::ProcessMapScreenInput);
   CStringTable_GetString::InstallAtFuncPtr(&CStringTable::GetString);
   // CMain_DrawDebugMetrics::InstallAtFuncPtr(&CMain::DrawDebugMetrics);
   CGraphics_EndScene::InstallAtFuncPtr(&CGraphics::EndScene);
