@@ -30,8 +30,8 @@ namespace ReplaceFunctionHookPool {
     u32 trampolineWords[TrampolineSize]{0};
   };
 
-  // Save Anywhere adds two hooks; RANDOMIZER now requires 22 slots.
-  constexpr size_t HookPoolSize = 288;
+  // Need 25 hooks with RANDOMIZER enabled.
+  constexpr size_t HookPoolSize = 384;
   constexpr size_t MaxHooks = HookPoolSize / (sizeof(ReplacementHookTrampoline));
 
   static ReplacementHookTrampoline hookPool[MaxHooks]{};

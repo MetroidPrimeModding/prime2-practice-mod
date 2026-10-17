@@ -2,6 +2,8 @@
 namespace CardGate {
   void tick(); // Per render frame; issues only asynchronous card transfers.
   void requestSave();
+  void requestLocationSave(unsigned long long serial);
+  bool loaded();
   void requestLoad();
   bool saveRequested();
   bool busy();

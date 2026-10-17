@@ -9,6 +9,11 @@ class CCameraBobber;
 
 class CPlayer : public CPhysicsActor {
 public:
+  enum class Morph { Standing = 0, Ball = 1, Morphing = 2, Unmorphing = 3 };
+  enum class Camera { FirstPerson = 0, Ball = 2 };
+  Morph MorphState() const { return *GetField<Morph>(this, 0x38c); }
+  void SetSpawnedMorphBallState(Morph state, CStateManager &mgr);
+  void SetCameraState(Camera state, CStateManager &mgr);
   bool IsMorphBallTransitioning() const;
   enum class EPlayerMovementState: u32 {
     OnGround=0, StartJump, InAir, Falling, FallingMorphed

@@ -9,6 +9,9 @@ class CCameraManager;
 
 class CGameState {
 public:
+  int SaveSlot() const { return *GetField<int>(this, 0x7c); }
+  bool IsDarkWorld() const { return (*GetField<u8>(this, 0x2ec) & 0x20) != 0; }
+  bool HasCheckpoint() const { return *GetField<int>(this, 0x18c) != 0; }
   u64 CardSerial() const { return *GetField<u64>(this, 0x108); }
   void SetCurrentWorldId(CAssetId id);
   CAssetId CurrentWorldAssetId();

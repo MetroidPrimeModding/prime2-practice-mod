@@ -1,3 +1,4 @@
+#include "system/SaveLocation.hpp"
 #include "SaveAnywhere.hpp"
 #include "imgui.h"
 #include "prime/CCameraManager.hpp"
@@ -11,7 +12,7 @@ namespace SaveAnywhere {
     int frames = 0;
     u64 serial = 0;
     CPlayer *requestPlayer = nullptr;
-    const char *status = "Reload uses the room's normal spawn; exact position is not saved.";
+    const char *status = "";
   } // namespace
 
   const char *whyNot() {
@@ -52,6 +53,7 @@ namespace SaveAnywhere {
     }
     if (state != State::Idle && ImGui::Button("Cancel save request")) cancel();
     ImGui::TextWrapped("%s", reason ? reason : status);
+    if (SaveLocation::message()) ImGui::TextWrapped("%s", SaveLocation::message());
   }
 
   bool consumeCloseRequest() {
@@ -81,6 +83,7 @@ namespace SaveAnywhere {
       status = "Game changed; save request canceled";
       return;
     }
+    SaveLocation::beginSave();
     mgr.DeferStateTransition(CStateManager::Transition::Save);
     status = "Save screen requested";
   }

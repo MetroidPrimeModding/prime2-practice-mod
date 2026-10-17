@@ -1,4 +1,5 @@
 #pragma once
+#include "GetField.hpp"
 #include "types.h"
 class CMemoryCardSys {
 public:
@@ -11,6 +12,22 @@ public:
 class CMemoryCardDriver {
 public:
   CMemoryCardDriver *Construct(CMemoryCardSys::EMemoryCardPort port, u32 banner, u32 icon0, u32 icon1, bool import);
+  void BuildExistingFileSlot(int slot);
+  void WriteBackupBuf();
+  int Port() const {
+    return *GetField<int>(this, 0);
+  }
+  int State() const {
+    return *GetField<int>(this, 0x10);
+  }
+  u64 CardSerial() const {
+    return *GetField<u64>(this, 0x28);
+  }
+  const u8 *SlotData(int slot) const {
+    if (slot < 0 || slot >= 3) return nullptr;
+    auto *data = *GetField<const u8 *>(this, 0xfc + slot * 8);
+    return data ? data + 4 : nullptr;
+  }
   CMemoryCardDriver *Destroy(int deleting);
 };
 extern "C" volatile bool EchoesCardDriverExists;

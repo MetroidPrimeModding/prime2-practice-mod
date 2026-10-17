@@ -1,4 +1,5 @@
 #include "CardGate.hpp"
+#include "SaveLocation.hpp"
 
 #include "card.h"
 #include "os.h"
@@ -48,8 +49,11 @@ namespace CardGate {
 #define SETTINGS_COUNT_FIELD(id, field) +1
     constexpr u32 kFieldCount = 0 SETTINGS_FIELDS(SETTINGS_COUNT_FIELD);
 #undef SETTINGS_COUNT_FIELD
+#define CHECK_SETTINGS_ID(id, field) static_assert(id < 0xe0, "Settings IDs E0..E2 are reserved for save locations");
+    SETTINGS_FIELDS(CHECK_SETTINGS_ID)
+#undef CHECK_SETTINGS_ID
     static_assert(sizeof(PayloadHeader) == 16);
-    static_assert(kFieldCount * 3 <= kMaxRecordsBytes);
+    static_assert(kFieldCount * 3 + 3 * (2 + SaveLocation::Record::kBytes) <= kMaxRecordsBytes);
     static_assert(kPayloadOffsetWithArt + sizeof(PayloadHeader) + kMaxRecordsBytes <= kBlockSize);
 
     // Bitfields can't be bound to a reference, so each field goes through a local
@@ -69,14 +73,10 @@ namespace CardGate {
       static constexpr bool kLoads = false;
       u8 *out;
       u32 size = 0;
-      __attribute__((noinline)) void put(u8 id, u32 value, u8 length) {
-        out[size++] = id;
-        out[size++] = length;
-        for (int shift = (length - 1) * 8; shift >= 0; shift -= 8)
-          out[size++] = value >> shift;
-      }
       __attribute__((noinline)) void operator()(u8 id, bool value) {
-        put(id, value, 1);
+        out[size++] = id;
+        out[size++] = 1;
+        out[size++] = value;
       }
     };
 
@@ -97,7 +97,7 @@ namespace CardGate {
     };
 
     enum class Step { Idle, Probing, Mounting, Checking, Creating, Writing, SettingStatus, Reading };
-    enum class Op { None, Load, Save };
+    enum class Op { None, Load, Save, MergeSave };
 
     Step step = Step::Idle;
     Op op = Op::None;
@@ -105,6 +105,12 @@ namespace CardGate {
     int driverCount = 0;
 
     bool saveWanted = false;
+    bool locationWanted = false;
+    bool includeSettings = false;
+    u64 locationSerial = 0;
+    u64 operationSerial = 0;
+    u64 loadedSerial = 0;
+    SaveLocation::Record writtenLocations[3];
     bool loadDone = false;
     bool mounted = false;
     bool fileOpen = false;
@@ -176,27 +182,6 @@ namespace CardGate {
       stepFrames = 0;
     }
 
-    // Layout a file has according to its card status, so a file written elsewhere still reads right
-    u32 payloadOffset(const CARDStat &stat) {
-      u32 offset = kBannerOffset;
-      if ((stat.bannerFormat & 3) == 1)
-        offset += 96 * 32 + 512;
-      else if ((stat.bannerFormat & 3) == 2)
-        offset += 96 * 32 * 2;
-      bool palette = false;
-      for (int i = 0; i < 8; i++) {
-        u32 format = (stat.iconFormat >> (i * 2)) & 3;
-        if (format == 0) break;
-        if (format == 1) {
-          offset += 32 * 32;
-          palette = true;
-        } else {
-          offset += 32 * 32 * 2;
-        }
-      }
-      return palette ? offset + 512 : offset;
-    }
-
     // C8 pixels use GX 8x4 tiles; palettes contain big-endian RGB5A3 entries.
     void artPixel(u8 *image, int width, int x, int y, u8 color) {
       image[((y / 4) * (width / 8) + x / 8) * 32 + (y % 4) * 8 + x % 8] = color;
@@ -264,10 +249,20 @@ namespace CardGate {
       memset(buffer, 0, kBlockSize);
       memcpy(buffer + kCommentOffset, kComment, sizeof(kComment) - 1);
       writeArt(buffer + kBannerOffset);
-      written = SETTINGS;
+      written = includeSettings ? SETTINGS : saved;
       u8 *payload = buffer + kPayloadOffsetWithArt;
       RecordWriter writer{payload + sizeof(PayloadHeader)};
       visitSettings(written, writer);
+      for (int slot = 0; slot < 3; ++slot) {
+        writtenLocations[slot] = SaveLocation::record(slot);
+        const auto &record = writtenLocations[slot];
+        if (record.valid() && record.serial() == operationSerial) {
+          writer.out[writer.size++] = 0xe0 + slot;
+          writer.out[writer.size++] = SaveLocation::Record::kBytes;
+          record.encode(writer.out + writer.size);
+          writer.size += SaveLocation::Record::kBytes;
+        }
+      }
       PayloadHeader header{kMagic, kVersion, writer.size, crc32(writer.out, writer.size)};
       memcpy(payload, &header, sizeof(header));
     }
@@ -303,7 +298,15 @@ namespace CardGate {
       enter(Step::Writing);
     }
 
+    void startLoad();
     void startSave() {
+      // A card swapped after the native save must not receive its companion location.
+      if (!includeSettings && operationSerial != locationSerial)
+        return fail("Exact location card changed; retry settings save on the original card", 0);
+      if (loadedSerial != operationSerial) {
+        op = Op::MergeSave;
+        return startLoad();
+      }
       s32 result = CARDOpen(kChan, kFileName, &file);
       if (result == CARD_RESULT_NOFILE) {
         if (!hasEnoughSpace()) return fail("Not enough free memory card space", 0);
@@ -319,8 +322,23 @@ namespace CardGate {
     }
 
     void startLoad() {
+      if (op == Op::Load) loadedSerial = 0;
+      if (op == Op::Load)
+        for (int slot = 0; slot < 3; ++slot)
+          SaveLocation::loadRecord(slot, nullptr, operationSerial);
       s32 result = CARDOpen(kChan, kFileName, &file);
-      if (result == CARD_RESULT_NOFILE) return finish("No saved settings");
+      if (result == CARD_RESULT_NOFILE) {
+        for (int slot = 0; slot < 3; ++slot)
+          SaveLocation::loadRecord(slot, nullptr, operationSerial);
+        loadedSerial = operationSerial;
+        if (op == Op::MergeSave) {
+          saved = Settings{};
+          op = Op::Save;
+          if (!hasEnoughSpace()) return fail("Not enough free memory card space", 0);
+          return startCreate();
+        }
+        return finish("No saved settings");
+      }
       if (result != CARD_RESULT_READY) return fail("Could not open the settings file", result);
       fileOpen = true;
 
@@ -336,14 +354,8 @@ namespace CardGate {
     }
 
     void finishLoad() {
-      CARDStat stat;
-      if (CARDGetStatus(kChan, file.fileNo, &stat) != CARD_RESULT_READY) {
-        return fail("Could not read the settings file status, using defaults", 0);
-      }
-      u32 offset = payloadOffset(stat);
-      if (offset + sizeof(PayloadHeader) > kBlockSize) {
-        return fail("Settings file is not recognized, using defaults", 0);
-      }
+      // The first deployed format always has our fixed C8 banner/icon layout.
+      constexpr u32 offset = kPayloadOffsetWithArt;
       PayloadHeader header;
       memcpy(&header, buffer + offset, sizeof(header));
       const u8 *data = buffer + offset + sizeof(header);
@@ -376,7 +388,16 @@ namespace CardGate {
       Settings loaded{};
       RecordReader reader{data, header.recordsSize};
       visitSettings(loaded, reader);
-      SETTINGS = loaded;
+      bool mergeSave = op == Op::MergeSave;
+      if (!mergeSave) SETTINGS = loaded;
+      for (int slot = 0; slot < 3; ++slot)
+        SaveLocation::loadRecord(slot, reader.find(0xe0 + slot, SaveLocation::Record::kBytes), operationSerial);
+      loadedSerial = operationSerial;
+      if (mergeSave) {
+        saved = loaded;
+        op = Op::Save;
+        return startWrite();
+      }
       finish("Loaded saved settings");
     }
 
@@ -396,6 +417,7 @@ namespace CardGate {
 
     void begin(Op newOp) {
       op = newOp;
+      operationSerial = 0;
       EchoesCardBusy = true;
 
       bufferRaw = static_cast<u8 *>(malloc(kBlockSize + 32));
@@ -450,6 +472,8 @@ namespace CardGate {
         if (result != CARD_RESULT_READY) return fail("Memory card check failed", result);
         return enter(Step::Checking);
       case Step::Checking:
+        if (CARDGetSerialNo(kChan, &operationSerial) != CARD_RESULT_READY || !operationSerial)
+          return fail("Could not identify the memory card", 0);
         return op == Op::Load ? startLoad() : startSave();
       case Step::Creating:
         fileOpen = true;
@@ -457,6 +481,9 @@ namespace CardGate {
       case Step::Writing:
         return startStatus();
       case Step::SettingStatus:
+        loadedSerial = operationSerial;
+        for (int slot = 0; slot < 3; ++slot)
+          if (writtenLocations[slot].serial() == operationSerial) SaveLocation::persisted(slot, writtenLocations[slot]);
         memcpy(&saved, &written, sizeof(Settings));
         return finish("Settings saved");
       case Step::Reading:
@@ -472,13 +499,21 @@ namespace CardGate {
     if (!EchoesCardSysExists || driverCount || EchoesCardDriverExists) return;
     // Load before honoring queued saves so a save request cannot clobber unread settings.
     if (!loadDone) return begin(Op::Load);
-    if (saveWanted) {
-      saveWanted = false;
+    if (saveWanted || locationWanted) {
+      includeSettings = saveWanted;
+      saveWanted = locationWanted = false;
       lastMessage = "Saving settings...";
       begin(Op::Save);
     }
   }
 
+  bool loaded() {
+    return loadDone;
+  }
+  void requestLocationSave(unsigned long long serial) {
+    locationSerial = serial;
+    locationWanted = true;
+  }
   void requestSave() {
     saveWanted = true;
   }
@@ -486,7 +521,7 @@ namespace CardGate {
     if (!busy()) loadDone = false;
   }
   bool saveRequested() {
-    return saveWanted;
+    return saveWanted || locationWanted;
   }
   bool busy() {
     return step != Step::Idle;

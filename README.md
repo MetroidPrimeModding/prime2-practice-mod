@@ -42,6 +42,7 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 
 ## Menus
 - Player
+  - Save game
   - Save/load position
   - Edit position
   - Light Show/IS toggling
@@ -73,6 +74,7 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 ## Changelog
 
 ### 1.3.0
+- Save Anywhere
 - Persistent settings
 - Build improvements ported from mp1
 - Display the practice mod version in place of the main menu's Multiplayer label.

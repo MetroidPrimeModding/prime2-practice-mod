@@ -1,3 +1,4 @@
+#include "system/SaveLocation.hpp"
 #include "UI/SaveAnywhere.hpp"
 #include "PracticeMod.hpp"
 #include "system/CardGate.hpp"
@@ -36,9 +37,30 @@ DECLARE_FUNCTION_REPLACEMENT(CardDriver_Construct) {
 
 DECLARE_FUNCTION_REPLACEMENT(CardDriver_Destroy) {
   static CMemoryCardDriver *Callback(CMemoryCardDriver *self, int deleting) {
+    SaveLocation::driverClosed(self);
     CMemoryCardDriver *result = Orig(self, deleting);
     if (self) CardGate::driverDestroyed();
     return result;
+  }
+};
+
+DECLARE_FUNCTION_REPLACEMENT(Location_SlotBuilt) {
+  static void Callback(CMemoryCardDriver *self, int slot) {
+    Orig(self, slot);
+    SaveLocation::slotBuilt(self, slot);
+  }
+};
+DECLARE_FUNCTION_REPLACEMENT(Location_GameSaved) {
+  static void Callback(CMemoryCardDriver *self) {
+    Orig(self);
+    SaveLocation::gameSaved(self);
+  }
+};
+DECLARE_FUNCTION_REPLACEMENT(Location_LoadGame) {
+  static void Callback(CMain *self, bool skipCheckpoint) {
+    SaveLocation::beforeLoad(skipCheckpoint);
+    Orig(self, skipCheckpoint);
+    SaveLocation::afterLoad();
   }
 };
 
@@ -97,12 +119,14 @@ DECLARE_FUNCTION_REPLACEMENT(CMainFlow_OnMessage) {
 DECLARE_FUNCTION_REPLACEMENT(SaveAnywhere_Teardown) {
   static CStateManager *Callback(CStateManager *self, int deleting) {
     SaveAnywhere::cancel();
+    SaveLocation::worldEnded();
     return Orig(self, deleting);
   }
 };
 
 DECLARE_FUNCTION_REPLACEMENT(SaveAnywhere_Update) {
   static void Callback(CStateManager *self, float dt, CArchitectureQueue &queue) {
+    SaveLocation::update();
     Orig(self, dt, queue);
     SaveAnywhere::update();
   }
@@ -231,6 +255,9 @@ DECLARE_FUNCTION_REPLACEMENT(CMoviePlayer_constructor) {
 // clang-format on
 
 void InstallHooks() {
+  Location_SlotBuilt::InstallAtFuncPtr(&CMemoryCardDriver::BuildExistingFileSlot);
+  Location_GameSaved::InstallAtFuncPtr(&CMemoryCardDriver::WriteBackupBuf);
+  Location_LoadGame::InstallAtFuncPtr(&CMain::StreamNewGameState);
   SaveAnywhere_Teardown::InstallAtFuncPtr(&CStateManager::Destroy);
   SaveAnywhere_Update::InstallAtFuncPtr(&CStateManager::Update);
   CardSys_Destroy::InstallAtFuncPtr(&CMemoryCardSys::Destroy);

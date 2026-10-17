@@ -45,6 +45,7 @@ static_assert(sizeof(CARDStat) == 0x6C);
 
 typedef void (*CARDCallback)(s32 chan, s32 result);
 
+s32 CARDGetSerialNo(s32 chan, u64 *serial);
 s32 CARDCheckAsync(s32 chan, CARDCallback callback);
 s32 CARDGetResultCode(s32 chan);
 s32 CARDFreeBlocks(s32 chan, s32 *byteNotUsed, s32 *filesNotUsed);
