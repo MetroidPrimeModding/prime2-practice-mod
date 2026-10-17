@@ -1,31 +1,24 @@
-#!/bin/bash -xe
-# param 1: build type (Debug/Release) - default Debug
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/build-common.sh"
+
 BUILD_TYPE="${1:-Debug}"
-# make build dir names lowercase (this is more cross-platform)
-BUILD_TYPE_LOWER="$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')"
+case "${BUILD_TYPE}" in
+  Debug) BUILD_TYPE_LOWER=debug ;;
+  Release) BUILD_TYPE_LOWER=release ;;
+  *) echo 'Usage: build.sh [Debug|Release] [CMake options...]' >&2; exit 1 ;;
+esac
+if (( $# > 0 )); then shift; fi
+CMAKE_DIR="cmake-build-${BUILD_TYPE_LOWER}-docker"
+CONTAINER_BUILD_DIR="${CONTAINER_SRC_DIR}/${CMAKE_DIR}"
+mkdir -p "${DIR}/${CMAKE_DIR}"
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "${DIR}"
-
-# -DCREATE_PATCHED_DOL= default_mod.dol
-
-# these are exported so build_and_copy.sh can use them too
-IMAGE="ghcr.io/metroidprimemodding/gcn-static-patcher/build:latest"
-CMAKE_DIR="cmake-build-${BUILD_TYPE_LOWER}-docker" # same as my clion for convenience
-EXTERNAL_SRC_DIR="./"
-EXTERNAL_BUILD_DIR="${EXTERNAL_SRC_DIR}${CMAKE_DIR}"
-DOCKER_SRC_DIR="/tmp/prime2-practice-mod/"
-DOCKER_BUILD_DIR="${DOCKER_SRC_DIR}${CMAKE_DIR}"
-
-if [ "${CREATE_PATCHED_DOL}" != "" ]; then
-    EXTRA_CMAKE_ARGUMENTS="-DCREATE_PATCHED_DOL=${DOCKER_BUILD_DIR}/${CREATE_PATCHED_DOL}"
+# Set this explicitly on every configure so removing default.dol clears a cached patch target.
+PATCHED_DOL=""
+if [[ -f "${DIR}/default.dol" ]]; then
+  PATCHED_DOL="${CONTAINER_BUILD_DIR}/default_mod.dol"
 fi
-
-mkdir -p "${EXTERNAL_BUILD_DIR}"
-
-# launch a build in a docker container first (this does the same thing intellij would do)
-docker run --rm \
-    -w "${DOCKER_BUILD_DIR}" \
-    -v "${EXTERNAL_SRC_DIR}":"${DOCKER_SRC_DIR}" \
-    "${IMAGE}" \
-    bash -c "cmake "${DOCKER_SRC_DIR}" -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${EXTRA_CMAKE_ARGUMENTS} -G Ninja && cmake --build . --config ${BUILD_TYPE}"
+container_run bash -euc '
+  cmake -S "$1" -B "$2" -G Ninja -DCMAKE_BUILD_TYPE="$3" -DCREATE_PATCHED_DOL="$4" "${@:5}"
+  cmake --build "$2" --config "$3"
+' build "${CONTAINER_SRC_DIR}" "${CONTAINER_BUILD_DIR}" "${BUILD_TYPE}" "${PATCHED_DOL}" "$@"

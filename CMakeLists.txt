@@ -151,6 +151,12 @@ add_gc_static_binary(prime2-practice src/prime-practice.lst
         src/opening_practice.bnr
         ${SOURCE_FILES})
 
+# Keep direct container CMake invocations consistent with build.sh.
+set(DEFAULT_PATCHED_DOL "")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/default.dol")
+    set(DEFAULT_PATCHED_DOL "${CMAKE_CURRENT_BINARY_DIR}/default_mod.dol")
+endif()
+set(CREATE_PATCHED_DOL "${DEFAULT_PATCHED_DOL}" CACHE FILEPATH "Patched DOL output (empty for ELF-only)")
 if(CREATE_PATCHED_DOL)
     patch_dol(prime2-practice default.dol "${CREATE_PATCHED_DOL}")
 endif()
