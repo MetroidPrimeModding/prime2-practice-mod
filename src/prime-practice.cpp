@@ -12,6 +12,7 @@ __attribute__((visibility("default"))) extern void _prolog();
 __attribute__((used, retain, visibility("default"))) extern void *_earlyboot_memset(void *dst, int val, u32 size);
 #pragma clang attribute pop
 void *memcpy(void *dest, const void *src, size_t count);
+extern u32 _PATCH_GALLERY_FLAGS[2];
 }
 
 // Called from __init_data before OSInit, constructors, allocation, or hooks are available.
@@ -41,6 +42,7 @@ struct ForceStaticInit {
   }
 } g_force_static_init;
 
+extern "C" void InstallGalleryHooks();
 void InstallHooks();
 void InstallRandomizerHooks();
 bool initialized{false};
@@ -69,6 +71,16 @@ void runStaticInitializers() {
   }
 }
 
+static void disableImageGallery() {
+  // G2ME01 CSlideShow::GetGalleriesUnlocked(): return no unlocked galleries.
+  // ScriptGui.rel's UpdateUnlocks then deactivates the gallery's frontend network.
+  // Leave persistent unlocks and the shared scan-completion helpers untouched.
+  _PATCH_GALLERY_FLAGS[0] = 0x38600000; // li r3, 0
+  _PATCH_GALLERY_FLAGS[1] = 0x4E800020; // blr
+  DCFlushRange(_PATCH_GALLERY_FLAGS, sizeof(_PATCH_GALLERY_FLAGS));
+  ICInvalidateRange(_PATCH_GALLERY_FLAGS, sizeof(_PATCH_GALLERY_FLAGS));
+}
+
 void _prolog() {
   // Preserve G2ME01 PPCSetFpIEEEMode, including repeated calls.
   asm volatile("mtfsb0 29");
@@ -84,6 +96,8 @@ void _prolog() {
   }
   initialized = true;
   runStaticInitializers();
+  disableImageGallery();
+  InstallGalleryHooks();
   PracticeMod::ClearInstance();
   Hook_OSResetSystem::InstallAtFuncPtr(&OSResetSystem);
   InstallHooks();

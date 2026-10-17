@@ -35,6 +35,8 @@ endif ()
 message(${CMAKE_CXX_FLAGS})
 
 set(SOURCE_FILES
+        src/GalleryRemoval.cpp
+        src/include/OSModule.hpp
         src/include/PrimeAPI.h
 
         src/include/rstl/string.h

@@ -140,7 +140,7 @@ macro(add_gc_static_binary name symbol_list patch_toml bnr_file carveouts_json)
           COMMAND python3 "${_carveouts_py}" header
           --config "${_carveouts_json}"
           --out "${_bin}/internal/carveouts.h"
-          DEPENDS "${_carveouts_json}" "${PRIMEAPI2_PATH}/G2ME01.json" "${_carveouts_py}"
+          DEPENDS "${_carveouts_json}" "${PRIMEAPI2_PATH}/G2ME01.json" "${PRIMEAPI2_PATH}/gallery_reclamation.json" "${_carveouts_py}"
   )
 
   add_custom_command(
@@ -155,7 +155,7 @@ macro(add_gc_static_binary name symbol_list patch_toml bnr_file carveouts_json)
   add_executable(${name}_pass1 ${_link_inputs})
   set_target_properties(${name}_pass1 PROPERTIES
           LINK_FLAGS "${CMAKE_PRIME_LINK_FLAGS} -T\"${_bin}/pass1.ld\" -Map \"${_bin}/${name}_pass1.map\""
-          LINK_DEPENDS "${_bin}/pass1.ld;${PRIMEAPI2_PATH}/python/validate_layout.py;${_carveouts_json};${PRIMEAPI2_PATH}/G2ME01.json"
+          LINK_DEPENDS "${_bin}/pass1.ld;${PRIMEAPI2_PATH}/python/validate_layout.py;${_carveouts_json};${PRIMEAPI2_PATH}/G2ME01.json;${PRIMEAPI2_PATH}/gallery_reclamation.json"
   )
   target_link_libraries(${name}_pass1 "${DEVKITPPC}/lib/gcc/powerpc-eabi/${GCC_VERSION}/libgcc.a")
   add_dependencies(${name}_pass1 ${name}_pass1_ld)
@@ -175,14 +175,14 @@ macro(add_gc_static_binary name symbol_list patch_toml bnr_file carveouts_json)
           --map "${_bin}/${name}_pass1.map"
           --out "${_bin}/packed.ld"
           --report "${_bin}/packed.txt"
-          DEPENDS ${name}_pass1 "${_carveouts_json}" "${PRIMEAPI2_PATH}/G2ME01.json" "${_ld_template}" "${_carveouts_py}"
+          DEPENDS ${name}_pass1 "${_carveouts_json}" "${PRIMEAPI2_PATH}/G2ME01.json" "${PRIMEAPI2_PATH}/gallery_reclamation.json" "${_ld_template}" "${_carveouts_py}"
   )
   add_custom_target(${name}_packed_ld DEPENDS "${_bin}/packed.ld")
 
   add_executable(${name} ${_link_inputs})
   set_target_properties(${name} PROPERTIES
           LINK_FLAGS "${CMAKE_PRIME_LINK_FLAGS} -T\"${_bin}/packed.ld\" -Map \"${_bin}/${name}.map\""
-          LINK_DEPENDS "${_bin}/packed.ld;${PRIMEAPI2_PATH}/python/validate_layout.py;${_carveouts_py};${_carveouts_json};${PRIMEAPI2_PATH}/G2ME01.json"
+          LINK_DEPENDS "${_bin}/packed.ld;${PRIMEAPI2_PATH}/python/validate_layout.py;${_carveouts_py};${_carveouts_json};${PRIMEAPI2_PATH}/G2ME01.json;${PRIMEAPI2_PATH}/gallery_reclamation.json"
   )
   target_link_libraries(${name} "${DEVKITPPC}/lib/gcc/powerpc-eabi/${GCC_VERSION}/libgcc.a")
   add_dependencies(${name} ${name}_packed_ld)
@@ -199,6 +199,9 @@ macro(patch_dol name base_dol output_dol)
   # Create the patched dol
   add_custom_command(
           OUTPUT "${output_dol}"
+          COMMAND python3 "${PRIMEAPI2_PATH}/python/validate_layout.py"
+          "$<TARGET_FILE:${name}>" --config "${_carveouts_json}"
+          --dol "${CMAKE_CURRENT_SOURCE_DIR}/${base_dol}"
           COMMAND "${GCN_STATIC_PATCHER}"
           -m "${CMAKE_CURRENT_BINARY_DIR}/${name}"
           -i "${CMAKE_CURRENT_SOURCE_DIR}/${base_dol}"

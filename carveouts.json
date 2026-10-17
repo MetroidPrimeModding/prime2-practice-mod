@@ -11,5 +11,33 @@
     ".text._prolog*",
     ".text._earlyboot_memset*"
   ],
-  "carveouts": []
+  "carveouts": [],
+  "reclamation_manifest": "PrimeAPI2/gallery_reclamation.json",
+  "stomps": [
+    {
+      "name": "gallery_1",
+      "start": "0x8018C4C0",
+      "size": "0x2620"
+    },
+    {
+      "name": "gallery_2",
+      "start": "0x8018EF60",
+      "size": "0x14C0"
+    },
+    {
+      "name": "gallery_3",
+      "start": "0x80190500",
+      "size": "0xC40"
+    },
+    {
+      "name": "gallery_4",
+      "start": "0x801911E0",
+      "size": "0x280"
+    },
+    {
+      "name": "gallery_5",
+      "start": "0x80191540",
+      "size": "0x160"
+    }
+  ]
 }

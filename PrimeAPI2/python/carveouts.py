@@ -97,9 +97,9 @@ def load_config(path):
     Carveout(c["name"], int(c["start"], 0), int(c["size"], 0), int(c["priority"]))
     for c in cfg["carveouts"]
   ]
-  if cfg.get("stomps"):
-    sys.exit("Code reclamation is outside step 6; stomps are disabled")
-  names = [c.name for c in carveouts]
+  stomps = [Carveout(c["name"], int(c["start"], 0), int(c["size"], 0), -1)
+            for c in cfg.get("stomps", [])]
+  names = [c.name for c in carveouts + stomps]
   if len(names) != len(set(names)):
     sys.exit(f"{path}: duplicate carveout names")
   profile_path = Path(path).resolve().parent / cfg["dol_profile"]
@@ -107,6 +107,18 @@ def load_config(path):
   # One free section is reserved for maindata. The patcher can use text or data slots.
   cfg["max_carveouts"] = sum(n == 0 for n in profile["section_sizes"]) - 1
   cfg["profile"] = profile
+  # Reclamation is opt-in and restricted to the reviewed, fingerprinted G2ME01 manifest.
+  if stomps:
+    manifest = json.loads((Path(path).resolve().parent / cfg["reclamation_manifest"]).read_text())
+    if manifest["revision"] != profile["revision"]:
+      sys.exit("Reclamation revision mismatch")
+    expected = [(r["name"], int(r["start"], 0), int(r["size"], 0)) for r in manifest["ranges"]]
+    if [(c.name, c.start, c.size) for c in stomps] != expected:
+      sys.exit("Stomps differ from reviewed reclamation manifest")
+    for entry in manifest["ranges"]:
+      if not re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]):
+        sys.exit("Invalid retail range fingerprint")
+    cfg["reclamation"] = manifest
   previous_end = 0
   for c in sorted(carveouts, key=lambda c: c.start):
     if c.name in {"maindata", "embedded_data"} or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", c.name):
@@ -119,6 +131,20 @@ def load_config(path):
       if size and c.start < addr + size and addr < c.start + c.size:
         sys.exit("Carveout overlaps retail DOL section")
     previous_end = c.start + c.size
+  previous_end = 0
+  for c in sorted(stomps, key=lambda c: c.start):
+    if (not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", c.name) or c.name in {"maindata", "embedded_data"}
+        or c.size <= 0 or c.start % 32 or c.size % 32 or c.start < previous_end):
+      sys.exit("Invalid, unaligned or overlapping stomp")
+    if not any(size and addr <= c.start < c.start + c.size <= addr + size
+               for addr, size in zip(profile["section_addresses"][:7], profile["section_sizes"][:7])):
+      sys.exit("Stomp outside verified retail DOL text")
+    for protected in cfg["reclamation"]["protected_ranges"]:
+      lo, size = int(protected["start"], 0), int(protected["size"], 0)
+      if c.start < lo + size and lo < c.start + c.size:
+        sys.exit("Stomp overlaps a disabling patch")
+    previous_end = c.start + c.size
+  cfg["stomps"] = stomps
   if cfg["reserve_bytes"] < 0 or cfg["pack_input_sections"] != [".text.*", ".rodata.*"]:
     sys.exit("Only immutable code/rodata may be packed")
   cfg["carveouts"] = carveouts
@@ -167,7 +193,9 @@ def parse_map(map_path, cfg):
 
 
 def pack(items, cfg):
-  bins = [Bin(c, c.load_end - cfg["reserve_bytes"]) for c in selected_carveouts(cfg)]
+  # In-place text replacements do not consume DOL slots; fill them first.
+  bins = [Bin(c, c.load_end) for c in cfg["stomps"]]
+  bins += [Bin(c, c.load_end - cfg["reserve_bytes"]) for c in selected_carveouts(cfg)]
   leftover = []
   for item in sorted(items, key=lambda i: (-i.size, i.section)):
     if not any(b.try_add(item) for b in bins):
@@ -233,7 +261,8 @@ def cmd_pack(args):
   bins, leftover = pack(items, cfg)
   write(args.out, render_ldscript(args.template, bins))
 
-  report = [f"DOL {cfg['profile']['revision']}: {cfg['max_carveouts']} carveout slots after maindata reservation", f"{'region':<24} {'address':<10} {'size':>7} {'code':>7} {'pad':>5} {'lost':>5} {'free':>6}  filled"]
+  report = [f"DOL {cfg['profile']['revision']}: {cfg['max_carveouts']} carveout slots after maindata reservation; "
+            f"{len(cfg['stomps'])} in-place stomp regions (no slots)", f"{'region':<24} {'address':<10} {'size':>7} {'code':>7} {'pad':>5} {'lost':>5} {'free':>6}  filled"]
   totals = [0, 0, 0, 0, 0]
   for b in bins:
     c = b.carveout

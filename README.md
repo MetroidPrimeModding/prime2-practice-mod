@@ -75,6 +75,8 @@ This project can produce a release & patch an Echoes iso to be the practice mod
 - Display the practice mod version in place of the main menu's Multiplayer label.
 - A bunch of minor address fixes from decomp
 - Update the community QR link
+- Memory usage reduced:
+  - Remove the image gallery
 
 ### 1.2.5
 - New GUI-based patcher
