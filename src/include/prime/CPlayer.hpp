@@ -16,7 +16,7 @@ public:
   void SetCameraState(Camera state, CStateManager &mgr);
   bool IsMorphBallTransitioning() const;
   enum class EPlayerMovementState: u32 {
-    OnGround=0, StartJump, InAir, Falling, FallingMorphed
+    OnGround=0, Leaping, Falling, OffLedge, Bouncing
   };
   void Teleport(const CTransform4f &newTransform, CStateManager &, bool resetBallCam);
 

@@ -77,7 +77,7 @@ public:
     if (!players) return nullptr;
     CPlayer *res = players[index % 4];
     if (!res) return nullptr;
-    if (*res->getMovementState() > CPlayer::EPlayerMovementState::FallingMorphed) {
+    if (*res->getMovementState() > CPlayer::EPlayerMovementState::Bouncing) {
       // it's not initialized yet!
       return nullptr;
     }
